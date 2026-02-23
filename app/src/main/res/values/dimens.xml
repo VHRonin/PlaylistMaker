@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="normal_text">22sp</dimen>
+    <dimen name="medium_text">16sp</dimen>
+    <dimen name="large_size">24dp</dimen>
+    <dimen name="big_size">21dp</dimen>
+    <dimen name="normal_size">16dp</dimen>
+    <dimen name="medium_size">12dp</dimen>
+    <dimen name="small_size">8dp</dimen>
+    <dimen name="no_size">0dp</dimen>
+</resources>
