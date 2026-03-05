@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/arrow_back"
+            android:src="@drawable/ic_back_arrow"
             android:padding="@dimen/medium_size"
             />
         <TextView
@@ -66,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:src="@drawable/share"
+            android:src="@drawable/ic_share"
             android:layout_marginRight="@dimen/medium_size"/>
     </FrameLayout>
 
@@ -87,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:src="@drawable/support"
+            android:src="@drawable/ic_support"
             android:layout_marginRight="9dp"/>
     </FrameLayout>
 
@@ -108,7 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:src="@drawable/arrow_forward"
-            android:layout_marginRight="@dimen/normal_size"/>
+            android:src="@drawable/ic_forward_arrow"
+            android:layout_marginRight="8dp"/>
     </FrameLayout>
 </LinearLayout>
