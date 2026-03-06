@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MenuButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/no_size</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">@dimen/normal_text</item>
+        <item name="android:textColor">@color/blackText</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/small_size</item>
+        <item name="cornerRadius">@dimen/normal_size</item>
+        <item name="iconTint">@color/black</item>
+        <item name="textAllCaps">false</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+    </style>
+
+    <style name="SettingsLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">@dimen/medium_size</item>
+        <item name="android:paddingVertical">@dimen/big_size</item>
+    </style>
+
+    <style name="SettingsText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/blackText</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+
+    <style name="SettingsImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">end</item>
+    </style>
+
+    <style name="Text">
+        <item name="android:textColor">@color/blackText</item>
+    </style>
+
+    <style name="Drawable">
+        <item name="tint">@color/black</item>
+    </style>
+
+    <style name="Background">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="BackgroundVariant">
+        <item name="android:background">@color/blue</item>
+    </style>
+
+    <style name="SwitchStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">end</item>
+    </style>
+</resources>
