@@ -46,6 +46,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/share"
         style="@style/SettingsLayout">
         <TextView
             android:text="@string/share_application"
@@ -58,6 +59,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/support"
         style="@style/SettingsLayout">
         <TextView
             android:text="@string/support"
@@ -70,6 +72,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/user_agreement"
         style="@style/SettingsLayout">
         <TextView
             android:text="@string/user_agreement"
