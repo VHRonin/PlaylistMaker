@@ -6,7 +6,7 @@
         <item name="colorSecondary" type="color">@color/black</item>
         <item name="colorSecondaryVariant">@color/black</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="colorSecondaryFixed">@color/blue</item>
+        <item name="colorSurface">@color/white</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />

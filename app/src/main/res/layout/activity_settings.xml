@@ -21,15 +21,9 @@
             style="@style/Drawable"
             />
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:text="@string/settings"
-            android:gravity="center_vertical"
-            android:textSize="@dimen/normal_text"
             android:layout_marginLeft="12dp"
-            android:fontFamily="@font/ys_display_medium"
-            android:textFontWeight="500"
-            style="@style/Text"/>
+            style="@style/HeadText"/>
     </LinearLayout>
 
     <FrameLayout
