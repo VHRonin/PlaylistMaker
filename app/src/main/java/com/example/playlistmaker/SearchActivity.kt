@@ -34,7 +34,13 @@ class SearchActivity : AppCompatActivity() {
 
         searchBack.setOnClickListener { finish() }
 
-        clearButton.setOnClickListener { searchEditText.setText("") }
+        clearButton.setOnClickListener {
+            searchEditText.setText("")
+
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
+            imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+        }
 
         val searchTextWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {

@@ -22,7 +22,7 @@
             />
         <TextView
             android:text="@string/settings"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="@dimen/medium_size"
             style="@style/HeadText"/>
     </LinearLayout>
 
