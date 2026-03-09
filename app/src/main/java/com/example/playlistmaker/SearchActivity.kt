@@ -1,9 +1,11 @@
 package com.example.playlistmaker
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -13,6 +15,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class SearchActivity : AppCompatActivity() {
+
+    private var searchString: String = TEXT
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -52,6 +57,7 @@ class SearchActivity : AppCompatActivity() {
                 count: Int
             ) {
                 clearButton.visibility = buttonVisibility(s)
+                searchString = s.toString()
             }
 
         }
@@ -60,5 +66,25 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun buttonVisibility(s: CharSequence?) = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_TEXT, searchString)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchString = savedInstanceState.getString(SEARCH_TEXT, TEXT)
+
+        val searchEditText = findViewById<EditText>(R.id.searchEditText)
+
+        searchEditText.setText(searchString)
+        searchEditText.setSelection(searchEditText.text.length)
+    }
+
+    companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val TEXT = ""
+    }
 
 }
