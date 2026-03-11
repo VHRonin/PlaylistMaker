@@ -6,76 +6,37 @@
     android:orientation="vertical"
     style="@style/Background">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/settingsToolBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="?attr/actionBarSize"
+        app:title="@string/settings"
+        app:navigationIcon="@drawable/ic_back_arrow"
+        style="@style/ToolbarStyle"/>
 
-        <ImageView
-            android:id="@+id/arrowBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_back_arrow"
-            android:padding="@dimen/medium_size"
-            style="@style/Drawable"
-            />
-        <TextView
-            android:text="@string/settings"
-            android:layout_marginLeft="@dimen/medium_size"
-            style="@style/HeadText"/>
-    </LinearLayout>
 
-    <FrameLayout
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_marginTop="@dimen/large_size"
-        style="@style/SettingsLayout">
-        <TextView
-            android:text="@string/night_theme"
-            style="@style/SettingsText"/>
+        android:text="@string/night_theme"
+        style="@style/SwitchStyle" />
 
-
-        <Switch
-            style="@style/SwitchStyle"
-            />
-    </FrameLayout>
-
-    <FrameLayout
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/share"
-        style="@style/SettingsLayout">
-        <TextView
-            android:text="@string/share_application"
-            style="@style/SettingsText"/>
+        android:text="@string/share_application"
+        android:drawableEnd="@drawable/ic_share"
+        style="@style/SettingsItemText"/>
 
-        <ImageView
-            style="@style/SettingsImage"
-            android:src="@drawable/ic_share"
-            android:layout_marginRight="@dimen/medium_size"/>
-    </FrameLayout>
-
-    <FrameLayout
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/support"
-        style="@style/SettingsLayout">
-        <TextView
-            android:text="@string/support"
-            style="@style/SettingsText"/>
+        android:text="@string/support"
+        android:drawableEnd="@drawable/ic_support"
+        style="@style/SettingsItemText"/>
 
-        <ImageView
-            style="@style/SettingsImage"
-            android:src="@drawable/ic_support"
-            android:layout_marginRight="9dp"/>
-    </FrameLayout>
-
-    <FrameLayout
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/user_agreement"
-        style="@style/SettingsLayout">
-        <TextView
-            android:text="@string/user_agreement"
-            style="@style/SettingsText" />
+        android:text="@string/user_agreement"
+        android:drawableEnd="@drawable/ic_forward_arrow"
+        style="@style/SettingsItemText"/>
 
-
-        <ImageView
-            style="@style/SettingsImage"
-            android:src="@drawable/ic_forward_arrow"
-            android:layout_marginRight="8dp"/>
-    </FrameLayout>
 </LinearLayout>
