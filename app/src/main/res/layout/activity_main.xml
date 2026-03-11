@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/blue"
-    android:padding="@dimen/normal_size">
+    android:padding="@dimen/normal_size"
+    style="@style/BackgroundVariant">
 
     <TextView
         android:layout_width="match_parent"
@@ -22,54 +22,21 @@
 
         <Button
             android:id="@+id/search"
-            android:foreground="?attr/selectableItemBackground"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/no_size"
-            android:layout_weight="1"
-            android:text="@string/search"
-            android:textSize="@dimen/normal_text"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="@dimen/normal_size"
             app:icon="@drawable/ic_search"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/small_size"
-            app:iconTint="@color/black"
-            android:textAllCaps="false" />
+            android:text="@string/search"
+            style="@style/MenuButtonStyle" />
 
         <Button
             android:id="@+id/library"
-            android:foreground="?attr/selectableItemBackground"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/no_size"
-            android:layout_weight="1"
-            android:text="@string/media_library"
-            android:textSize="@dimen/normal_text"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="@dimen/normal_size"
             app:icon="@drawable/ic_library"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/small_size"
-            app:iconTint="@color/black"
-            android:textAllCaps="false"/>
+            android:text="@string/media_library"
+            style="@style/MenuButtonStyle" />
 
         <Button
             android:id="@+id/settings"
-            android:foreground="?attr/selectableItemBackground"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/no_size"
-            android:layout_weight="1"
-            android:text="@string/settings"
-            android:textSize="@dimen/normal_text"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="@dimen/normal_size"
             app:icon="@drawable/ic_settings"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/small_size"
-            app:iconTint="@color/black"
-            android:textAllCaps="false"/>
+            android:text="@string/settings"
+            style="@style/MenuButtonStyle"/>
 
     </LinearLayout>
 
