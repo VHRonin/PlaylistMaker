@@ -41,6 +41,18 @@
         <item name="android:layout_gravity">end</item>
     </style>
 
+    <style name="SettingsItemText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingHorizontal">@dimen/normal_size</item>
+        <item name="android:paddingVertical">21dp</item>
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/blackText</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
     <style name="Text">
         <item name="android:textColor">@color/blackText</item>
     </style>
@@ -58,9 +70,15 @@
     </style>
 
     <style name="SwitchStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_gravity">end</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingHorizontal">@dimen/normal_size</item>
+        <item name="android:paddingVertical">21dp</item>
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/blackText</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
     <style name="HeadText" parent="Text">
@@ -78,5 +96,18 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:inputType">text</item>
+    </style>
+
+    <style name="ToolbarTitleText" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">@dimen/normal_text</item>
+        <item name="android:lineHeight">24sp</item>
+    </style>
+
+    <style name="ToolbarStyle">
+        <item name="contentInsetStartWithNavigation">@dimen/no_size</item>
+        <item name="titleTextAppearance">@style/ToolbarTitleText</item>
+        <item name="navigationIconTint">@color/black</item>
     </style>
 </resources>

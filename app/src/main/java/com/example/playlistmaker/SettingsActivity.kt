@@ -10,20 +10,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.net.toUri
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val arrowBack = findViewById<ImageView>(R.id.arrowBack)
-        val shareButton = findViewById<FrameLayout>(R.id.share)
-        val supportButton = findViewById<FrameLayout>(R.id.support)
-        val userAgreementButton = findViewById<FrameLayout>(R.id.user_agreement)
+        val shareButton = findViewById<MaterialTextView>(R.id.share)
+        val supportButton = findViewById<MaterialTextView>(R.id.support)
+        val userAgreementButton = findViewById<MaterialTextView>(R.id.user_agreement)
+        val settingsToolBar = findViewById<MaterialToolbar>(R.id.settingsToolBar)
 
-        arrowBack.setOnClickListener {
-            finish()
-        }
+        setSupportActionBar(settingsToolBar)
+
+        settingsToolBar.setNavigationOnClickListener { finish() }
 
         shareButton.setOnClickListener { shareApp() }
 
