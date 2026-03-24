@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/medium_size"
+    android:paddingVertical="@dimen/small_size">
+
+    <ImageView
+        android:id="@+id/artworkUrl100"
+        android:layout_width="@dimen/track_image_size"
+        android:layout_height="@dimen/track_image_size"
+        android:src="@drawable/ic_placeholder_track"
+        android:scaleType="centerCrop"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/small_size">
+
+        <TextView
+            android:id="@+id/trackName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:maxWidth="250dp"
+            style="@style/RegularText"
+            tools:text="Here Comes The Sun (Remastered Edition)"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/artistName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:maxWidth="100dp"
+                android:ellipsize="end"
+                style="@style/SmallText"
+                tools:text="The Beatlesssssssssssssssss"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_circle"
+                style="@style/GrayWhiteColor"/>
+
+            <TextView
+                android:id="@+id/trackTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/SmallText"
+                tools:text="5:12" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_forward_arrow"
+        android:layout_gravity="center"
+        style="@style/GrayWhiteColor"/>
+</LinearLayout>
