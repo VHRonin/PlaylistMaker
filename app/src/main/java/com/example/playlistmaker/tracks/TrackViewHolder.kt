@@ -1,5 +1,8 @@
 package com.example.playlistmaker.tracks
 
+import android.content.Context
+import android.icu.text.SimpleDateFormat
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import java.util.Locale
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -18,9 +22,11 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val artworkUrl100 = itemView.findViewById<ImageView>(R.id.artworkUrl100)
 
     fun bind(item: Track){
-        trackName.text = item.trackName
-        artistName.text = item.artistName
-        trackTime.text = item.trackTime
+        trackName.text = item.trackName ?: itemView.context.getString(R.string.unknown_track_name)
+        artistName.text = item.artistName ?: itemView.context.getString(R.string.unknown_artist_name)
+        trackTime.text = item.trackTime?.let { formatTime(it) } ?: "--:--"
+
+        val roundedCorners = dpToPx(2f)
 
         Glide
             .with(itemView)
@@ -28,7 +34,24 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .placeholder(R.drawable.ic_placeholder_track)
             .error(R.drawable.ic_placeholder_track)
             .centerCrop()
-            .transform(RoundedCorners(2))
+            .transform(RoundedCorners(roundedCorners))
             .into(artworkUrl100)
+    }
+
+    private fun formatTime(trackTime: String?): String{
+        val millis = trackTime?.toLongOrNull() ?: return "--:--"
+        return SimpleDateFormat(
+            "mm:ss",
+            Locale.getDefault()
+        )
+            .format(millis)
+            .toString()
+    }
+
+    private fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            itemView.context.resources.displayMetrics).toInt()
     }
 }

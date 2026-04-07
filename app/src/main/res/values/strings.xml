@@ -14,4 +14,9 @@
     <string name="support_intent_data">mailto:</string>
     <string name="share_intent_type">text/plain</string>
     <string name="agreement_link">https://yandex.ru/legal/practicum_offer/ru/</string>
+    <string name="update">Обновить</string>
+    <string name="no_found">Ничего не нашлось</string>
+    <string name="no_internet">Проблемы со связью \n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="unknown_track_name">Неизвестный трек</string>
+    <string name="unknown_artist_name">Неизвестный исполнитель</string>
 </resources>
