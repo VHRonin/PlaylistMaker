@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.net.toUri
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
@@ -22,6 +23,7 @@ class SettingsActivity : AppCompatActivity() {
         val supportButton = findViewById<MaterialTextView>(R.id.support)
         val userAgreementButton = findViewById<MaterialTextView>(R.id.user_agreement)
         val settingsToolBar = findViewById<MaterialToolbar>(R.id.settingsToolBar)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
 
         setSupportActionBar(settingsToolBar)
 
@@ -32,6 +34,12 @@ class SettingsActivity : AppCompatActivity() {
         supportButton.setOnClickListener { textSupport() }
 
         userAgreementButton.setOnClickListener { openUserAgreement() }
+
+        themeSwitcher.isChecked = (applicationContext as App).darkTheme
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+        }
     }
 
     private fun shareApp(){

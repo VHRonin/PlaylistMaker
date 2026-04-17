@@ -17,6 +17,7 @@
 
 
     <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/themeSwitcher"
         android:layout_marginTop="@dimen/large_size"
         android:text="@string/night_theme"
         style="@style/SwitchStyle" />
