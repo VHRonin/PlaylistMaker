@@ -22,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.network.ITunesApi
 import com.example.playlistmaker.network.TracksResponse
+import com.example.playlistmaker.tracks.SearchHistory
 import com.example.playlistmaker.tracks.Track
 import com.example.playlistmaker.tracks.TrackAdapter
 import com.google.android.material.appbar.MaterialToolbar
@@ -45,6 +46,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var connectionText: TextView
     private lateinit var connectionButton: Button
 
+    private lateinit var hintMessage: LinearLayout
+    private lateinit var historyRecyclerView: RecyclerView
+
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
         .addConverterFactory(GsonConverterFactory.create())
@@ -54,6 +58,8 @@ class SearchActivity : AppCompatActivity() {
 
     private val tracks = ArrayList<Track>()
     private val tracksAdapter = TrackAdapter()
+    private val historyAdapter = TrackAdapter()
+    private lateinit var searchHistory: SearchHistory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +71,8 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
+        val sharedPreferences = getSharedPreferences(SEARCH_PREFERENCES, MODE_PRIVATE)
+
         searchEditText = findViewById<EditText>(R.id.searchEditText)
         val clearButton = findViewById<ImageButton>(R.id.clearButton)
         val searchToolBar = findViewById<MaterialToolbar>(R.id.searchToolBar)
@@ -74,6 +82,10 @@ class SearchActivity : AppCompatActivity() {
         connectionIcon = findViewById(R.id.connectionIcon)
         connectionText = findViewById(R.id.connectionText)
         connectionButton = findViewById(R.id.connectionButton)
+
+        hintMessage = findViewById(R.id.hintMessageHistory)
+        historyRecyclerView = findViewById(R.id.historyRecyclerView)
+        searchHistory = SearchHistory(sharedPreferences)
 
         setSupportActionBar(searchToolBar)
 
@@ -85,6 +97,8 @@ class SearchActivity : AppCompatActivity() {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
             imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+
+            searchEditText.clearFocus()
 
             tracks.clear()
             tracksAdapter.notifyDataSetChanged()
@@ -118,11 +132,14 @@ class SearchActivity : AppCompatActivity() {
                     clearTracks()
                     clearMessageVisibility()
                 }
+
+                hintMessage.visibility = if (searchEditText.hasFocus() && s?.isEmpty() == true) View.VISIBLE else View.GONE
             }
 
         }
 
         tracksAdapter.tracks = tracks
+        historyAdapter.tracks = searchHistory.tracks
 
         searchEditText.addTextChangedListener(searchTextWatcher)
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -136,8 +153,13 @@ class SearchActivity : AppCompatActivity() {
         }
 
         tracksRecyclerView.adapter = tracksAdapter
+        historyRecyclerView.adapter = historyAdapter
 
         connectionButton.setOnClickListener { findTracks(lastFailedTerm) }
+
+        searchEditText.setOnFocusChangeListener {view, hasFocus ->
+            hintMessage.visibility = if (hasFocus && searchEditText.text.isEmpty()) View.VISIBLE else View.GONE
+        }
     }
 
     private fun findTracks(text: String){
@@ -237,6 +259,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val TEXT = ""
+        const val SEARCH_PREFERENCES = "search_preferences"
     }
 
 }

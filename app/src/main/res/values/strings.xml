@@ -19,4 +19,6 @@
     <string name="no_internet">Проблемы со связью \n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="unknown_track_name">Неизвестный трек</string>
     <string name="unknown_artist_name">Неизвестный исполнитель</string>
+    <string name="you_searched_for">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>
