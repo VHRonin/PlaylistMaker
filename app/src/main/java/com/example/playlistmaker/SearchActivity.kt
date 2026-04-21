@@ -48,6 +48,7 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var hintMessage: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var clearHistoryButton: Button
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -85,7 +86,15 @@ class SearchActivity : AppCompatActivity() {
 
         hintMessage = findViewById(R.id.hintMessageHistory)
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
+        clearHistoryButton = findViewById(R.id.clearHistoryButton)
+
         searchHistory = SearchHistory(sharedPreferences)
+
+        tracksAdapter.searchHistory = searchHistory
+        historyAdapter.searchHistory = searchHistory
+
+
+        historyAdapter.onClick = { historyAdapter.notifyDataSetChanged() }
 
         setSupportActionBar(searchToolBar)
 
@@ -133,7 +142,9 @@ class SearchActivity : AppCompatActivity() {
                     clearMessageVisibility()
                 }
 
-                hintMessage.visibility = if (searchEditText.hasFocus() && s?.isEmpty() == true) View.VISIBLE else View.GONE
+                hintMessage.visibility = if (searchEditText.hasFocus() && s?.isEmpty() == true && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+                searchHistory.fillTracksHistory()
+                historyAdapter.notifyDataSetChanged()
             }
 
         }
@@ -158,7 +169,15 @@ class SearchActivity : AppCompatActivity() {
         connectionButton.setOnClickListener { findTracks(lastFailedTerm) }
 
         searchEditText.setOnFocusChangeListener {view, hasFocus ->
-            hintMessage.visibility = if (hasFocus && searchEditText.text.isEmpty()) View.VISIBLE else View.GONE
+            hintMessage.visibility = if (hasFocus && searchEditText.text.isEmpty() && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+            searchHistory.fillTracksHistory()
+            historyAdapter.notifyDataSetChanged()
+        }
+
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clear()
+            historyAdapter.notifyDataSetChanged()
+            hintMessage.visibility = View.GONE
         }
     }
 
