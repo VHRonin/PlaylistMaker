@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="normal_text">22sp</dimen>
+    <dimen name="heading_text">19sp</dimen>
     <dimen name="medium_text">16sp</dimen>
     <dimen name="track_image_size">45dp</dimen>
     <dimen name="large_size">24dp</dimen>

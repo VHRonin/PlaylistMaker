@@ -20,7 +20,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/normal_size"
         android:paddingTop="@dimen/small_size"
         android:orientation="vertical">
 
@@ -54,14 +53,6 @@
                 android:visibility="gone"/>
         </FrameLayout>
 
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/tracksRecyclerView"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-<!--            android:layout_marginTop="@dimen/normal_size"-->
-<!--            tools:listitem="@layout/track" />-->
-
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -81,7 +72,7 @@
                 android:layout_marginTop="102dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 android:visibility="gone">
 
                 <ImageView
@@ -97,7 +88,7 @@
                     android:gravity="center"
                     android:fontFamily="@font/ys_display_medium"
                     android:textFontWeight="400"
-                    android:textSize="19dp"
+                    android:textSize="@dimen/heading_text"
                     style="@style/Text"
                     android:layout_marginTop="@dimen/normal_size"
                     android:layout_marginHorizontal="@dimen/large_size"
@@ -108,13 +99,48 @@
                     android:id="@+id/connectionButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="?attr/colorOnSecondary"
-                    app:cornerRadius="54dp"
                     android:text="@string/update"
-                    android:textAllCaps="false"
-                    android:letterSpacing="0"
+                    style="@style/RoundedButton"
                     tools:visibility="visible"
                     android:visibility="gone"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/hintMessageHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/large_size"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="15dp"
+                    android:text="@string/you_searched_for"
+                    android:gravity="center"
+                    style="@style/BoldText"
+                    android:textSize="@dimen/heading_text"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/historyRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/track"
+                    tools:itemCount="3" />
+
+                <Button
+                    android:id="@+id/clearHistoryButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/clear_history"
+                    android:layout_gravity="center"
+                    style="@style/RoundedButton"
+                    android:layout_marginTop="@dimen/large_size"
+                    tools:visibility="visible" />
             </LinearLayout>
         </FrameLayout>
 

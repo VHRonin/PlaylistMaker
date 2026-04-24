@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/medium_size"
-    android:paddingVertical="@dimen/small_size">
+    android:paddingVertical="@dimen/small_size"
+    android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/artworkUrl100"

@@ -7,6 +7,8 @@ import com.example.playlistmaker.R
 
 class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
     var tracks: List<Track> = ArrayList()
+    lateinit var searchHistory: SearchHistory
+    var onClick: () -> Unit = {}
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -21,6 +23,8 @@ class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
         position: Int
     ) {
         holder.bind(tracks[position])
+
+        holder.itemView.setOnClickListener { searchHistory.addTrackToHistory(tracks[position], onHistoryClick = onClick) }
     }
 
     override fun getItemCount(): Int {
