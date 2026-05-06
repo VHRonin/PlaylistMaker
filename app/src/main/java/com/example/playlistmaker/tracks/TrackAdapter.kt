@@ -1,8 +1,10 @@
 package com.example.playlistmaker.tracks
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.PlayerActivity
 import com.example.playlistmaker.R
 
 class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
@@ -24,7 +26,15 @@ class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
     ) {
         holder.bind(tracks[position])
 
-        holder.itemView.setOnClickListener { searchHistory.addTrackToHistory(tracks[position], onHistoryClick = onClick) }
+        holder.itemView.setOnClickListener {
+            searchHistory.addTrackToHistory(tracks[position], onHistoryClick = onClick)
+
+            val context = holder.itemView.context
+
+            val playerIntent = Intent(context, PlayerActivity::class.java)
+
+            context.startActivity(playerIntent)
+        }
     }
 
     override fun getItemCount(): Int {
