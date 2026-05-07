@@ -71,8 +71,7 @@
             app:layout_constraintStart_toStartOf="@id/startGuideline"
             app:layout_constraintEnd_toEndOf="@id/endGuideline"
             app:layout_constraintTop_toBottomOf="@id/artwork"
-            tools:text="Yesterday (Remastered 2009)"
-            android:text="Yesterday (Remastered 2009)"/>
+            tools:text="Yesterday (Remastered 2009)" />
 
         <TextView
             android:id="@+id/artistName"
@@ -84,8 +83,7 @@
             app:layout_constraintStart_toStartOf="@id/startGuideline"
             app:layout_constraintEnd_toEndOf="@id/endGuideline"
             app:layout_constraintTop_toBottomOf="@id/trackName"
-            tools:text="The Beatles"
-            android:text="The Beatles"/>
+            tools:text="The Beatles" />
         
         <ImageButton
             android:id="@+id/addToLibraryButton"
@@ -135,7 +133,7 @@
             app:layout_constraintStart_toStartOf="@id/playerButton"
             app:layout_constraintEnd_toEndOf="@id/playerButton"
             tools:text="0:30"
-            android:text="0:30"/>
+            android:text="@string/default_time"/>
 
         <TextView
             android:id="@+id/trackTimeKey"
@@ -143,23 +141,32 @@
             android:layout_height="wrap_content"
             style="@style/PlayerTextKey"
             android:layout_marginTop="30dp"
+            app:layout_constraintTag="timeKey"
             app:layout_constraintTop_toBottomOf="@id/trackCurrentTime"
             app:layout_constraintStart_toStartOf="@id/startGuidelineCloser"
-            tools:text="Длительность"
-            android:text="Длительность"/>
+            android:text="@string/duration" />
 
         <TextView
             android:id="@+id/trackTimeValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextValue"
+            app:layout_constraintTag="timeValue"
             app:layout_constraintTop_toTopOf="@id/trackTimeKey"
             app:layout_constraintBottom_toBottomOf="@id/trackTimeKey"
             app:layout_constraintEnd_toEndOf="@id/endGuidelineCloser"
-            tools:text="5:35"
-            android:text="5:35"/>
+            tools:text="5:35" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierAfterTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_tags="timeKey, timeValue"
+            />
         
         <androidx.constraintlayout.widget.Group
+            android:id="@+id/trackTimeGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
@@ -170,23 +177,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextKey"
-            app:layout_constraintTop_toBottomOf="@id/trackTimeKey"
+            app:layout_constraintTag="nameKey"
+            app:layout_constraintTop_toBottomOf="@id/barrierAfterTime"
             app:layout_constraintStart_toStartOf="@id/startGuidelineCloser"
-            tools:text="Альбом"
-            android:text="Альбом"/>
+            android:text="@string/album" />
 
         <TextView
             android:id="@+id/collectionNameValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextValue"
+            android:textAlignment="viewEnd"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintTag="nameValue"
+            app:layout_constraintStart_toEndOf="@id/collectionNameKey"
             app:layout_constraintTop_toTopOf="@id/collectionNameKey"
             app:layout_constraintBottom_toBottomOf="@id/collectionNameKey"
             app:layout_constraintEnd_toEndOf="@id/endGuidelineCloser"
-            tools:text="Yesterday (Remastered 2009)"
-            android:text="Yesterday (Remastered 2009)"/>
+            tools:text="Yesterday (Remastered 2009)" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierAfterCollection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_tags="nameKey, nameValue"
+            />
 
         <androidx.constraintlayout.widget.Group
+            android:id="@+id/collectionNameGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
@@ -197,23 +217,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextKey"
-            app:layout_constraintTop_toBottomOf="@id/collectionNameKey"
+            app:layout_constraintTag="dateKey"
+            app:layout_constraintTop_toBottomOf="@id/barrierAfterCollection"
             app:layout_constraintStart_toStartOf="@id/startGuidelineCloser"
-            tools:text="Год"
-            android:text="Год"/>
+            android:text="@string/year" />
 
         <TextView
             android:id="@+id/releaseDateValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextValue"
+            app:layout_constraintTag="dateValue"
             app:layout_constraintTop_toTopOf="@id/releaseDateKey"
             app:layout_constraintBottom_toBottomOf="@id/releaseDateKey"
             app:layout_constraintEnd_toEndOf="@id/endGuidelineCloser"
-            tools:text="1965"
-            android:text="1965"/>
+            tools:text="1965" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierAfterDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_tags="dateKey, dateValue"
+            />
 
         <androidx.constraintlayout.widget.Group
+            android:id="@+id/releaseDateGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
@@ -224,23 +253,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextKey"
-            app:layout_constraintTop_toBottomOf="@id/releaseDateKey"
+            app:layout_constraintTag="genreKey"
+            app:layout_constraintTop_toBottomOf="@id/barrierAfterDate"
             app:layout_constraintStart_toStartOf="@id/startGuidelineCloser"
-            tools:text="Жанр"
-            android:text="Жанр"/>
+            android:text="@string/genre" />
 
         <TextView
             android:id="@+id/primaryGenreNameValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextValue"
+            app:layout_constraintTag="genreValue"
             app:layout_constraintTop_toTopOf="@id/primaryGenreNameKey"
             app:layout_constraintBottom_toBottomOf="@id/primaryGenreNameKey"
             app:layout_constraintEnd_toEndOf="@id/endGuidelineCloser"
-            tools:text="Rock"
-            android:text="Rock"/>
+            tools:text="Rock" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierAfterGenre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_tags="genreKey, genreValue"
+            />
 
         <androidx.constraintlayout.widget.Group
+            android:id="@+id/primaryGenreNameGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
@@ -251,10 +289,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/PlayerTextKey"
-            app:layout_constraintTop_toBottomOf="@id/primaryGenreNameKey"
+            app:layout_constraintTop_toBottomOf="@id/barrierAfterGenre"
             app:layout_constraintStart_toStartOf="@id/startGuidelineCloser"
-            tools:text="Страна"
-            android:text="Страна"/>
+            android:text="@string/country" />
 
         <TextView
             android:id="@+id/countryValue"
@@ -264,10 +301,10 @@
             app:layout_constraintTop_toTopOf="@id/countryKey"
             app:layout_constraintBottom_toBottomOf="@id/countryKey"
             app:layout_constraintEnd_toEndOf="@id/endGuidelineCloser"
-            tools:text="Великобритания"
-            android:text="Великобритания"/>
+            tools:text="Великобритания" />
 
         <androidx.constraintlayout.widget.Group
+            android:id="@+id/countryGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"

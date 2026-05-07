@@ -26,7 +26,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         artistName.text = item.artistName ?: itemView.context.getString(R.string.unknown_artist_name)
         trackTime.text = item.trackTime?.let { formatTime(it) } ?: "--:--"
 
-        val roundedCorners = dpToPx(2f)
+        val roundedCorners = dpToPx(2f, itemView.context)
 
         Glide
             .with(itemView)
@@ -37,21 +37,21 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .transform(RoundedCorners(roundedCorners))
             .into(artworkUrl100)
     }
+}
 
-    private fun formatTime(trackTime: String?): String{
-        val millis = trackTime?.toLongOrNull() ?: return "--:--"
-        return SimpleDateFormat(
-            "mm:ss",
-            Locale.getDefault()
-        )
-            .format(millis)
-            .toString()
-    }
+fun formatTime(trackTime: String?): String{
+    val millis = trackTime?.toLongOrNull() ?: return "--:--"
+    return SimpleDateFormat(
+        "mm:ss",
+        Locale.getDefault()
+    )
+        .format(millis)
+        .toString()
+}
 
-    private fun dpToPx(dp: Float): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            itemView.context.resources.displayMetrics).toInt()
-    }
+fun dpToPx(dp: Float, context: Context): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp,
+        context.resources.displayMetrics).toInt()
 }
