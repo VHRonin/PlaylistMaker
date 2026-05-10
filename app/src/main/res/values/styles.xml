@@ -57,8 +57,29 @@
         <item name="android:tint">@color/textGray</item>
     </style>
 
+    <style name="Gray400">
+        <item name="android:textColor">@color/textGray</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+
+    <style name="PlayerTextKey" parent="Gray400">
+        <item name="android:textSize">13sp</item>
+        <item name="android:paddingVertical">@dimen/small_size</item>
+    </style>
+
+    <style name="PlayerTextValue" parent="Gray400">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
     <style name="Text">
         <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Medium400" parent="Text">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">400</item>
     </style>
     
     <style name="BoldText" parent="Text">
