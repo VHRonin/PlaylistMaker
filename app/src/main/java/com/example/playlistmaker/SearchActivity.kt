@@ -2,6 +2,8 @@ package com.example.playlistmaker
 
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +15,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -26,6 +29,7 @@ import com.example.playlistmaker.tracks.SearchHistory
 import com.example.playlistmaker.tracks.Track
 import com.example.playlistmaker.tracks.TrackAdapter
 import com.google.android.material.appbar.MaterialToolbar
+import kotlinx.coroutines.Runnable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,6 +53,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var hintMessage: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
+    private lateinit var progressBar: ProgressBar
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -58,9 +63,15 @@ class SearchActivity : AppCompatActivity() {
     private val iTunesService = retrofit.create(ITunesApi::class.java)
 
     private val tracks = ArrayList<Track>()
-    private val tracksAdapter = TrackAdapter()
-    private val historyAdapter = TrackAdapter()
+    private val tracksAdapter = TrackAdapter({debounceClick()})
+    private val historyAdapter = TrackAdapter({debounceClick()})
     private lateinit var searchHistory: SearchHistory
+
+    private var isClickAllowed = true
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable{findTracks(searchString)}
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +98,7 @@ class SearchActivity : AppCompatActivity() {
         hintMessage = findViewById(R.id.hintMessageHistory)
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
+        progressBar = findViewById(R.id.progressBar)
 
         searchHistory = SearchHistory(sharedPreferences)
 
@@ -145,6 +157,8 @@ class SearchActivity : AppCompatActivity() {
                 hintMessage.visibility = if (searchEditText.hasFocus() && s?.isEmpty() == true && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
                 searchHistory.fillTracksHistory()
                 historyAdapter.notifyDataSetChanged()
+
+                searchDebounce()
             }
 
         }
@@ -153,15 +167,15 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter.tracks = searchHistory.tracks
 
         searchEditText.addTextChangedListener(searchTextWatcher)
-        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                findTracks(searchEditText.text.toString())
-                true
-            }
-            else{
-                false
-            }
-        }
+//        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                findTracks(searchEditText.text.toString())
+//                true
+//            }
+//            else{
+//                false
+//            }
+//        }
 
         tracksRecyclerView.adapter = tracksAdapter
         historyRecyclerView.adapter = historyAdapter
@@ -183,11 +197,15 @@ class SearchActivity : AppCompatActivity() {
 
     private fun findTracks(text: String){
         if (text.isNotEmpty()){
+            progressBar.visibility = View.VISIBLE
+            clearTracks()
+
             iTunesService.search(text).enqueue(object : Callback<TracksResponse>{
                 override fun onResponse(
                     call: Call<TracksResponse?>,
                     response: Response<TracksResponse?>
                 ) {
+                    progressBar.visibility = View.GONE
                     if (response.code() == 200){
                         tracks.clear()
 
@@ -206,6 +224,7 @@ class SearchActivity : AppCompatActivity() {
                     call: Call<TracksResponse?>,
                     t: Throwable
                 ) {
+                    progressBar.visibility = View.GONE
                     checkResponse(-1)
                 }
 
@@ -260,6 +279,21 @@ class SearchActivity : AppCompatActivity() {
 
     private fun buttonVisibility(s: CharSequence?) = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
 
+    private fun debounceClick(): Boolean{
+        val current = isClickAllowed
+        if (isClickAllowed){
+            isClickAllowed = false
+            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+        }
+
+        return current
+    }
+
+    private fun searchDebounce(){
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_TEXT, searchString)
@@ -279,6 +313,8 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val TEXT = ""
         const val SEARCH_PREFERENCES = "search_preferences"
+        const val CLICK_DEBOUNCE_DELAY = 1000L
+        const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
 }

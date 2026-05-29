@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.PlayerActivity
 import com.example.playlistmaker.R
 
-class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter(private val debounceClick: () -> Boolean) : RecyclerView.Adapter<TrackViewHolder>() {
     var tracks: List<Track> = ArrayList()
     lateinit var searchHistory: SearchHistory
     var onClick: () -> Unit = {}
@@ -30,19 +30,21 @@ class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
 
-            val playerIntent = Intent(context, PlayerActivity::class.java)
-            playerIntent.putExtra("artwork", track.getCoverArtwork())
-            playerIntent.putExtra("trackName", track.trackName)
-            playerIntent.putExtra("artistName", track.artistName)
-            playerIntent.putExtra("trackTime", track.trackTime)
-            playerIntent.putExtra("collectionName", track.collectionName)
-            playerIntent.putExtra("releaseDate", track.releaseDate)
-            playerIntent.putExtra("primaryGenreName", track.primaryGenreName)
-            playerIntent.putExtra("country", track.country)
+            if (debounceClick()){
+                val playerIntent = Intent(context, PlayerActivity::class.java)
+                playerIntent.putExtra("artwork", track.getCoverArtwork())
+                playerIntent.putExtra("trackName", track.trackName)
+                playerIntent.putExtra("artistName", track.artistName)
+                playerIntent.putExtra("trackTime", track.trackTime)
+                playerIntent.putExtra("collectionName", track.collectionName)
+                playerIntent.putExtra("releaseDate", track.releaseDate)
+                playerIntent.putExtra("primaryGenreName", track.primaryGenreName)
+                playerIntent.putExtra("country", track.country)
 
-            context.startActivity(playerIntent)
+                context.startActivity(playerIntent)
 
-            searchHistory.addTrackToHistory(track, onHistoryClick = onClick)
+                searchHistory.addTrackToHistory(track, onHistoryClick = onClick)
+            }
         }
     }
 
