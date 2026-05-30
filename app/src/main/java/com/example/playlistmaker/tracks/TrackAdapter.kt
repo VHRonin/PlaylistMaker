@@ -40,6 +40,7 @@ class TrackAdapter(private val debounceClick: () -> Boolean) : RecyclerView.Adap
                 playerIntent.putExtra("releaseDate", track.releaseDate)
                 playerIntent.putExtra("primaryGenreName", track.primaryGenreName)
                 playerIntent.putExtra("country", track.country)
+                playerIntent.putExtra("previewUrl", track.previewUrl)
 
                 context.startActivity(playerIntent)
 
