@@ -1,11 +1,10 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.player
 
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,8 +15,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.tracks.dpToPx
-import com.example.playlistmaker.tracks.formatTime
+import com.example.playlistmaker.R
+import com.example.playlistmaker.presentation.search.dpToPx
+import com.example.playlistmaker.presentation.search.formatTime
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.Runnable
 import java.text.SimpleDateFormat
@@ -160,8 +160,8 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun getCurrentTIme(): String = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
 
-    private fun createPlayerRunnable(): Runnable{
-        return object:  Runnable{
+    private fun createPlayerRunnable(): Runnable {
+        return object: Runnable {
             override fun run() {
                 when (playerState){
                     MEDIA_PLAYING -> {

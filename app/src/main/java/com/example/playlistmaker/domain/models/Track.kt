@@ -1,4 +1,4 @@
-package com.example.playlistmaker.tracks
+package com.example.playlistmaker.domain.models
 
 import com.google.gson.annotations.SerializedName
 

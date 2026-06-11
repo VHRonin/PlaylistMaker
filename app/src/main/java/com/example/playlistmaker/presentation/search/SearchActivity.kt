@@ -1,14 +1,11 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search
 
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -17,25 +14,25 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.network.ITunesApi
-import com.example.playlistmaker.network.TracksResponse
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data.network.ITunesApi
+import com.example.playlistmaker.data.dto.TracksResponse
+import com.example.playlistmaker.domain.SearchResult
+import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.tracks.SearchHistory
-import com.example.playlistmaker.tracks.Track
-import com.example.playlistmaker.tracks.TrackAdapter
+import com.example.playlistmaker.domain.models.Track
 import com.google.android.material.appbar.MaterialToolbar
-import kotlinx.coroutines.Runnable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
 
@@ -55,22 +52,18 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearHistoryButton: Button
     private lateinit var progressBar: ProgressBar
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://itunes.apple.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val iTunesService = retrofit.create(ITunesApi::class.java)
-
     private val tracks = ArrayList<Track>()
-    private val tracksAdapter = TrackAdapter({debounceClick()})
-    private val historyAdapter = TrackAdapter({debounceClick()})
+    private val tracksAdapter = TrackAdapter({ debounceClick() })
+    private val historyAdapter = TrackAdapter({ debounceClick() })
     private lateinit var searchHistory: SearchHistory
 
     private var isClickAllowed = true
 
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable{findTracks(searchString)}
+
+
+    private lateinit var tracksInteractor: TracksInteractor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -167,15 +160,6 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter.tracks = searchHistory.tracks
 
         searchEditText.addTextChangedListener(searchTextWatcher)
-//        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-//            if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                findTracks(searchEditText.text.toString())
-//                true
-//            }
-//            else{
-//                false
-//            }
-//        }
 
         tracksRecyclerView.adapter = tracksAdapter
         historyRecyclerView.adapter = historyAdapter
@@ -193,6 +177,8 @@ class SearchActivity : AppCompatActivity() {
             historyAdapter.notifyDataSetChanged()
             hintMessage.visibility = View.GONE
         }
+
+        tracksInteractor = Creator.provideTrackInteractor()
     }
 
     private fun findTracks(text: String){
@@ -200,36 +186,32 @@ class SearchActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             clearTracks()
 
-            iTunesService.search(text).enqueue(object : Callback<TracksResponse>{
-                override fun onResponse(
-                    call: Call<TracksResponse?>,
-                    response: Response<TracksResponse?>
-                ) {
-                    progressBar.visibility = View.GONE
-                    if (response.code() == 200){
-                        tracks.clear()
+            tracksInteractor.searchTracks(
+                text,
+                object : TracksInteractor.TracksConsumer{
+                    override fun consume(searchResult: SearchResult) {
+                        Handler(Looper.getMainLooper()).post {
+                            progressBar.visibility = View.GONE
+                            when (searchResult){
+                                is SearchResult.Success -> {
+                                    tracks.clear()
 
-                        if (response.body()?.results?.isNotEmpty() == true){
-                            tracks.addAll(response.body()?.results!!)
-                            tracksAdapter.notifyDataSetChanged()
+                                    tracks.addAll(searchResult.foundTracks)
+                                    tracksAdapter.notifyDataSetChanged()
+
+                                    checkResponse(searchResult.code)
+                                }
+                                is SearchResult.NothingFound -> {
+                                    checkResponse(searchResult.code)
+                                }
+                                else -> {
+                                    checkResponse((searchResult as SearchResult.NetworkError).code)
+                                }
+                            }
                         }
-                        checkResponse(response.code())
-                    }
-                    else{
-                        checkResponse(response.code())
                     }
                 }
-
-                override fun onFailure(
-                    call: Call<TracksResponse?>,
-                    t: Throwable
-                ) {
-                    progressBar.visibility = View.GONE
-                    checkResponse(-1)
-                }
-
-
-            })
+            )
         }
     }
 
