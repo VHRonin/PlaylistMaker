@@ -15,7 +15,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.PlayerState
+import com.example.playlistmaker.domain.api.PlayerInteractor
 import com.example.playlistmaker.presentation.search.dpToPx
 import com.example.playlistmaker.presentation.search.formatTime
 import com.google.android.material.appbar.MaterialToolbar
@@ -39,8 +42,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var trackCurrentTime: TextView
     private lateinit var previewUrl: String
 
-    private val mediaPlayer = MediaPlayer()
-    private var playerState = MEDIA_DEFAULT
+    private lateinit var playerInteractor: PlayerInteractor
 
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mediaRunnable: Runnable
@@ -100,6 +102,8 @@ class PlayerActivity : AppCompatActivity() {
         primaryGenreName.text = intent.getStringExtra("primaryGenreName")
         country.text = intent.getStringExtra("country")
         previewUrl = intent.getStringExtra("previewUrl") ?: ""
+
+        playerInteractor = Creator.providePlayerInteractor()
     }
 
     private fun checkValues(){
@@ -117,25 +121,20 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        playerInteractor.releasePlayer()
     }
 
     private fun handlePlayButton(){
-        when (playerState){
-            MEDIA_PLAYING -> pausePlayer()
-            MEDIA_PAUSED, MEDIA_PREPARED -> startPlayer()
+        when (playerInteractor.getPlayerState()){
+            is PlayerState.Playing -> pausePlayer()
+            is PlayerState.Paused, is PlayerState.Prepared -> startPlayer()
+            is PlayerState.Default -> {}
         }
     }
 
     private fun preparePlayer(){
-        mediaPlayer.setDataSource(previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState = MEDIA_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
+        playerInteractor.preparePlayer(previewUrl){
             playerButton.setImageResource(R.drawable.ic_play_button)
-            playerState = MEDIA_PREPARED
         }
 
         playerButton.setOnClickListener {
@@ -144,43 +143,37 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun startPlayer(){
-        mediaPlayer.start()
-        playerButton.setImageResource(R.drawable.ic_stop_button)
-        playerState = MEDIA_PLAYING
+        playerInteractor.startPlayer {
+            playerButton.setImageResource(R.drawable.ic_stop_button)
+        }
 
         mediaRunnable = createPlayerRunnable()
         handler.post(mediaRunnable)
     }
 
     private fun pausePlayer(){
-        mediaPlayer.pause()
-        playerButton.setImageResource(R.drawable.ic_play_button)
-        playerState = MEDIA_PAUSED
+        playerInteractor.pausePlayer {
+            playerButton.setImageResource(R.drawable.ic_play_button)
+        }
     }
-
-    private fun getCurrentTIme(): String = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-
     private fun createPlayerRunnable(): Runnable {
         return object: Runnable {
             override fun run() {
-                when (playerState){
-                    MEDIA_PLAYING -> {
-                        trackCurrentTime.text = getCurrentTIme()
+                when (playerInteractor.getPlayerState()){
+                    is PlayerState.Playing -> {
+                        trackCurrentTime.text = playerInteractor.getCurrentTIme()
                         handler.postDelayed(this, TRACK_TIME_DELAY)
                     }
-                    MEDIA_PAUSED -> {
+                    is PlayerState.Paused -> {
                         handler.removeCallbacks(this)
                     }
+                    else -> {}
                 }
             }
         }
     }
 
     companion object{
-        const val MEDIA_DEFAULT = 0
-        const val MEDIA_PREPARED = 1
-        const val MEDIA_PLAYING = 2
-        const val MEDIA_PAUSED = 3
         const val TRACK_TIME_DELAY = 300L
     }
 }
