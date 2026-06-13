@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class TrackDto(
     val trackName: String?,
     val artistName: String?,
-    var trackTimeMillis: Long?,
+    @SerializedName("trackTimeMillis") var trackTime: Long?,
     val artworkUrl100: String?,
     val trackId: Long?,
     val collectionName: String?,

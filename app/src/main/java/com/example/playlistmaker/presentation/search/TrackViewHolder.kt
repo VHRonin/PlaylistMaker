@@ -23,7 +23,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(item: Track){
         trackName.text = item.trackName ?: itemView.context.getString(R.string.unknown_track_name)
         artistName.text = item.artistName ?: itemView.context.getString(R.string.unknown_artist_name)
-        trackTime.text = item.trackTime?.let { formatTime(it) } ?: "--:--"
+        trackTime.text = item.trackTime ?: "--:--"
 
         val roundedCorners = dpToPx(2f, itemView.context)
 

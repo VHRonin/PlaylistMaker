@@ -1,6 +1,5 @@
 package com.example.playlistmaker.presentation.player
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,11 +19,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.PlayerState
 import com.example.playlistmaker.domain.api.PlayerInteractor
 import com.example.playlistmaker.presentation.search.dpToPx
-import com.example.playlistmaker.presentation.search.formatTime
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.Runnable
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var artwork: ImageView
@@ -96,7 +92,7 @@ class PlayerActivity : AppCompatActivity() {
 
         trackName.text = intent.getStringExtra("trackName")
         artistName.text = intent.getStringExtra("artistName")
-        trackTime.text = intent.getStringExtra("trackTime")?.let { formatTime(it) } ?: "--:--"
+        trackTime.text = intent.getStringExtra("trackTime") ?: "--:--"
         collectionName.text = intent.getStringExtra("collectionName")
         releaseDate.text = intent.getStringExtra("releaseDate")?.take(4)
         primaryGenreName.text = intent.getStringExtra("primaryGenreName")

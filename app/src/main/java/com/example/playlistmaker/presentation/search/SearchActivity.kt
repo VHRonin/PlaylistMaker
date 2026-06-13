@@ -21,18 +21,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.network.ITunesApi
-import com.example.playlistmaker.data.dto.TracksResponse
 import com.example.playlistmaker.domain.SearchResult
+import com.example.playlistmaker.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.api.TracksInteractor
-import com.example.playlistmaker.tracks.SearchHistory
 import com.example.playlistmaker.domain.models.Track
 import com.google.android.material.appbar.MaterialToolbar
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
@@ -55,7 +48,7 @@ class SearchActivity : AppCompatActivity() {
     private val tracks = ArrayList<Track>()
     private val tracksAdapter = TrackAdapter({ debounceClick() })
     private val historyAdapter = TrackAdapter({ debounceClick() })
-    private lateinit var searchHistory: SearchHistory
+    // private lateinit var searchHistory: SearchHistory
 
     private var isClickAllowed = true
 
@@ -64,6 +57,7 @@ class SearchActivity : AppCompatActivity() {
 
 
     private lateinit var tracksInteractor: TracksInteractor
+    private lateinit var searchHistory: SearchHistoryInteractor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +70,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val sharedPreferences = getSharedPreferences(SEARCH_PREFERENCES, MODE_PRIVATE)
+        // val sharedPreferences = getSharedPreferences(SEARCH_PREFERENCES, MODE_PRIVATE)
 
         searchEditText = findViewById<EditText>(R.id.searchEditText)
         val clearButton = findViewById<ImageButton>(R.id.clearButton)
@@ -93,13 +87,17 @@ class SearchActivity : AppCompatActivity() {
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progressBar)
 
-        searchHistory = SearchHistory(sharedPreferences)
+        // searchHistory = SearchHistory(sharedPreferences)
+        searchHistory = Creator.provideSearchHistoryInteractor(this)
 
         tracksAdapter.searchHistory = searchHistory
         historyAdapter.searchHistory = searchHistory
 
 
-        historyAdapter.onClick = { historyAdapter.notifyDataSetChanged() }
+        historyAdapter.onClick = {
+            historyAdapter.tracks = searchHistory.getTracks()
+            historyAdapter.notifyDataSetChanged()
+        }
 
         setSupportActionBar(searchToolBar)
 
@@ -149,6 +147,7 @@ class SearchActivity : AppCompatActivity() {
 
                 hintMessage.visibility = if (searchEditText.hasFocus() && s?.isEmpty() == true && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
                 searchHistory.fillTracksHistory()
+                historyAdapter.tracks = searchHistory.getTracks()
                 historyAdapter.notifyDataSetChanged()
 
                 searchDebounce()
@@ -157,7 +156,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         tracksAdapter.tracks = tracks
-        historyAdapter.tracks = searchHistory.tracks
+        historyAdapter.tracks = searchHistory.getTracks()
 
         searchEditText.addTextChangedListener(searchTextWatcher)
 
@@ -169,11 +168,12 @@ class SearchActivity : AppCompatActivity() {
         searchEditText.setOnFocusChangeListener {view, hasFocus ->
             hintMessage.visibility = if (hasFocus && searchEditText.text.isEmpty() && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
             searchHistory.fillTracksHistory()
+            historyAdapter.tracks = searchHistory.getTracks()
             historyAdapter.notifyDataSetChanged()
         }
 
         clearHistoryButton.setOnClickListener {
-            searchHistory.clear()
+            searchHistory.clearHistory()
             historyAdapter.notifyDataSetChanged()
             hintMessage.visibility = View.GONE
         }
@@ -299,7 +299,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val TEXT = ""
-        const val SEARCH_PREFERENCES = "search_preferences"
         const val CLICK_DEBOUNCE_DELAY = 1000L
         const val SEARCH_DEBOUNCE_DELAY = 2000L
     }

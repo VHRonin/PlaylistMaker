@@ -5,12 +5,15 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.example.playlistmaker.App
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.ThemeInteractor
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var themeInteractor: ThemeInteractor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -20,6 +23,8 @@ class SettingsActivity : AppCompatActivity() {
         val userAgreementButton = findViewById<MaterialTextView>(R.id.user_agreement)
         val settingsToolBar = findViewById<MaterialToolbar>(R.id.settingsToolBar)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+
+        themeInteractor = Creator.provideThemeInteractor(this)
 
         setSupportActionBar(settingsToolBar)
 
@@ -35,6 +40,7 @@ class SettingsActivity : AppCompatActivity() {
 
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             (applicationContext as App).switchTheme(checked)
+            themeInteractor.saveTheme(checked)
         }
     }
 

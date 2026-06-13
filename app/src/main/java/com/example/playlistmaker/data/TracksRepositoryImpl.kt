@@ -1,10 +1,13 @@
 package com.example.playlistmaker.data
 
+import android.icu.text.SimpleDateFormat
+import android.util.Log
 import com.example.playlistmaker.data.dto.TracksRequest
 import com.example.playlistmaker.data.dto.TracksResponse
 import com.example.playlistmaker.domain.SearchResult
 import com.example.playlistmaker.domain.api.TracksRepository
 import com.example.playlistmaker.domain.models.Track
+import java.util.Locale
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
     override fun searchTracks(term: String): SearchResult {
@@ -17,7 +20,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                         Track(
                             it.trackName,
                             it.artistName,
-                            it.trackTime,
+                            formatTime(it.trackTime),
                             it.artworkUrl100,
                             it.trackId,
                             it.collectionName,
@@ -36,5 +39,15 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
         else {
             return SearchResult.NetworkError(response.resultCode)
         }
+    }
+
+    fun formatTime(trackTime: Long?): String{
+        val millis = trackTime ?: return "--:--"
+        return SimpleDateFormat(
+            "mm:ss",
+            Locale.getDefault()
+        )
+            .format(millis)
+            .toString()
     }
 }

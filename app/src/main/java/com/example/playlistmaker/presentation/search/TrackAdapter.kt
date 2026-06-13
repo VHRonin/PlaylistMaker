@@ -5,13 +5,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.tracks.SearchHistory
 import com.example.playlistmaker.presentation.player.PlayerActivity
 
 class TrackAdapter(private val debounceClick: () -> Boolean) : RecyclerView.Adapter<TrackViewHolder>() {
     var tracks: List<Track> = ArrayList()
-    lateinit var searchHistory: SearchHistory
+    lateinit var searchHistory: SearchHistoryInteractor
     var onClick: () -> Unit = {}
 
     override fun onCreateViewHolder(
