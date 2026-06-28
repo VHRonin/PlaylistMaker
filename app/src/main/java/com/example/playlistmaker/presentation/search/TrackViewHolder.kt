@@ -1,17 +1,16 @@
-package com.example.playlistmaker.tracks
+package com.example.playlistmaker.presentation.search
 
 import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
 import java.util.Locale
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -24,7 +23,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(item: Track){
         trackName.text = item.trackName ?: itemView.context.getString(R.string.unknown_track_name)
         artistName.text = item.artistName ?: itemView.context.getString(R.string.unknown_artist_name)
-        trackTime.text = item.trackTime?.let { formatTime(it) } ?: "--:--"
+        trackTime.text = item.trackTime ?: "--:--"
 
         val roundedCorners = dpToPx(2f, itemView.context)
 

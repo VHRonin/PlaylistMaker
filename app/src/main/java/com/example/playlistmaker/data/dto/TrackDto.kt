@@ -1,11 +1,11 @@
-package com.example.playlistmaker.tracks
+package com.example.playlistmaker.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class Track(
+data class TrackDto(
     val trackName: String?,
     val artistName: String?,
-    @SerializedName("trackTimeMillis") var trackTime: String?,
+    @SerializedName("trackTimeMillis") var trackTime: Long?,
     val artworkUrl100: String?,
     val trackId: Long?,
     val collectionName: String?,
@@ -13,7 +13,4 @@ data class Track(
     val primaryGenreName: String?,
     val country: String?,
     val previewUrl: String
-){
-
-    fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/',"512x512bb.jpg")
-}
+)
