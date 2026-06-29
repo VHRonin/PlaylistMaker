@@ -1,7 +1,7 @@
 package com.example.playlistmaker.data.player
 
 import android.media.MediaPlayer
-import com.example.playlistmaker.data.MediaPlayerClient
+import com.example.playlistmaker.data.player.MediaPlayerClient
 import java.text.SimpleDateFormat
 import java.util.Locale
 
