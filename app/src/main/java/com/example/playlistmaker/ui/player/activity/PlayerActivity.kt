@@ -17,7 +17,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.di.dataModule
+import com.example.playlistmaker.di.interactorModule
+import com.example.playlistmaker.di.repositoryModule
+import com.example.playlistmaker.di.viewModelModule
 import com.example.playlistmaker.domain.player.PlayerState
 import com.example.playlistmaker.domain.player.api.PlayerInteractor
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
@@ -25,6 +28,9 @@ import com.example.playlistmaker.ui.search.dpToPx
 import com.example.playlistmaker.ui.settings.view_model.SettingsViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.Runnable
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.context.startKoin
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var artwork: ImageView
@@ -41,7 +47,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var playerButton: ImageButton
     private lateinit var trackCurrentTime: TextView
     private lateinit var previewUrl: String
-    private lateinit var viewModel: PlayerViewModel
+    private val viewModel by viewModel<PlayerViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,11 +117,6 @@ class PlayerActivity : AppCompatActivity() {
         primaryGenreName.text = intent.getStringExtra("primaryGenreName")
         country.text = intent.getStringExtra("country")
         previewUrl = intent.getStringExtra("previewUrl") ?: ""
-
-        viewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getFactory()
-        ).get(PlayerViewModel::class.java)
     }
 
     private fun checkValues(){

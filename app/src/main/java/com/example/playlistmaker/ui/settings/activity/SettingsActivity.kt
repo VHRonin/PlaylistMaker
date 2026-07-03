@@ -11,13 +11,20 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.di.dataModule
+import com.example.playlistmaker.di.interactorModule
+import com.example.playlistmaker.di.repositoryModule
+import com.example.playlistmaker.di.sharingModule
+import com.example.playlistmaker.di.viewModelModule
 import com.example.playlistmaker.domain.settings.api.ThemeInteractor
 import com.example.playlistmaker.domain.sharing.models.EmailData
 import com.example.playlistmaker.ui.settings.view_model.SettingsViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.context.startKoin
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,10 +43,7 @@ class SettingsActivity : AppCompatActivity() {
         val settingsToolBar = findViewById<MaterialToolbar>(R.id.settingsToolBar)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
 
-        val viewModel: SettingsViewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getFactory(this)
-        ).get(SettingsViewModel::class.java)
+        val viewModel by viewModel<SettingsViewModel>()
 
         setSupportActionBar(settingsToolBar)
         settingsToolBar.setNavigationOnClickListener { finish() }

@@ -5,8 +5,7 @@ import com.example.playlistmaker.data.player.MediaPlayerClient
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaPlayerClientImpl : MediaPlayerClient {
-    private val mediaPlayer = MediaPlayer()
+class MediaPlayerClientImpl(private val mediaPlayer: MediaPlayer) : MediaPlayerClient {
     private var playerState = MEDIA_DEFAULT
 
     override fun preparePlayer(previewUrl: String, onCompletion: () -> Unit) {
@@ -22,14 +21,18 @@ class MediaPlayerClientImpl : MediaPlayerClient {
     }
 
     override fun startPlayer(onStart: () -> Unit) {
-        mediaPlayer.start()
-        playerState = MEDIA_PLAYING
+        if (playerState == MEDIA_PREPARED || playerState == MEDIA_PAUSED) {
+            mediaPlayer.start()
+            playerState = MEDIA_PLAYING
+        }
         onStart()
     }
 
     override fun pausePlayer(onPause: () -> Unit) {
-        mediaPlayer.pause()
-        playerState = MEDIA_PAUSED
+        if (playerState == MEDIA_PLAYING) {
+            mediaPlayer.pause()
+            playerState = MEDIA_PAUSED
+        }
         onPause()
     }
 
