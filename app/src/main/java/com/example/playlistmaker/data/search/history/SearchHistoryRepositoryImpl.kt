@@ -27,10 +27,6 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory) :
         searchHistory.clearHistory()
     }
 
-    override fun fillTracksHistory() {
-        searchHistory.fillTracksHistory()
-    }
-
     override fun getTracks(): ArrayList<Track> {
         return searchHistory.getTracks().map {
             formatTrackFromDto(it)

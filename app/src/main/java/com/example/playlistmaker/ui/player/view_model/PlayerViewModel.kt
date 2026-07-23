@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.player.PlayerState
 import com.example.playlistmaker.domain.player.api.PlayerInteractor
 import com.example.playlistmaker.ui.player.PlayerUiState
@@ -20,12 +19,6 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     companion object{
         const val TRACK_TIME_DELAY = 300L
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val playerInteractor = Creator.providePlayerInteractor()
-                PlayerViewModel(playerInteractor)
-            }
-        }
     }
 
     private val playerUiState = MutableLiveData<PlayerUiState>(

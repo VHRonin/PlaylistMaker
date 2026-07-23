@@ -21,10 +21,6 @@ class SearchHistoryInteractorImpl(private val searchHistoryRepository: SearchHis
         searchHistoryRepository.clearHistory()
     }
 
-    override fun fillTracksHistory() {
-        searchHistoryRepository.fillTracksHistory()
-    }
-
     override fun getTracks(): ArrayList<Track> {
         return searchHistoryRepository.getTracks()
     }

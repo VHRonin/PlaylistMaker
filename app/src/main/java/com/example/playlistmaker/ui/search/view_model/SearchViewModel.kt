@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.search.api.TracksInteractor
@@ -25,13 +24,6 @@ class SearchViewModel(
         const val TEXT = ""
         const val CLICK_DEBOUNCE_DELAY = 1000L
         const val SEARCH_DEBOUNCE_DELAY = 2000L
-        fun getFactory(context: Context): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val tracksInteractor = Creator.provideTrackInteractor()
-                val searchHistoryInteractor = Creator.provideSearchHistoryInteractor(context)
-                SearchViewModel(tracksInteractor, searchHistoryInteractor)
-            }
-        }
     }
 
     private val searchUiState = MutableLiveData<SearchUiState>(
@@ -103,10 +95,6 @@ class SearchViewModel(
                 this?.historyTracks?.addAll(searchHistoryInteractor.getHistory())
             }
         )
-    }
-
-    fun fillTracksHistory(){
-        searchHistoryInteractor.fillTracksHistory()
     }
 
     fun clearHistory(){

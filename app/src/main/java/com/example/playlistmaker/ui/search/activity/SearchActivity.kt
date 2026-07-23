@@ -23,7 +23,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.di.dataModule
+import com.example.playlistmaker.di.interactorModule
+import com.example.playlistmaker.di.repositoryModule
+import com.example.playlistmaker.di.viewModelModule
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.search.api.TracksInteractor
@@ -33,6 +36,9 @@ import com.example.playlistmaker.ui.search.view_model.SearchState
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import com.example.playlistmaker.ui.settings.view_model.SettingsViewModel
 import com.google.android.material.appbar.MaterialToolbar
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.context.startKoin
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchEditText: EditText
@@ -49,7 +55,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var tracksAdapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by viewModel<SearchViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,11 +82,6 @@ class SearchActivity : AppCompatActivity() {
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progressBar)
-
-        viewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getFactory(this)
-        ).get(SearchViewModel::class.java)
 
         tracksAdapter = TrackAdapter(
             debounceClick = { viewModel.debounceClick() },
@@ -164,7 +165,6 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 hintMessage.visibility = if (searchEditText.hasFocus() && s?.isEmpty() == true && historyAdapter.tracks.isNotEmpty()) View.VISIBLE else View.GONE
-                viewModel.fillTracksHistory()
                 viewModel.getTrackHistory()
 
                 viewModel.searchDebounce()
@@ -185,7 +185,6 @@ class SearchActivity : AppCompatActivity() {
 
         searchEditText.setOnFocusChangeListener {view, hasFocus ->
             hintMessage.visibility = if (hasFocus && searchEditText.text.isEmpty() && historyAdapter.tracks.isNotEmpty()) View.VISIBLE else View.GONE
-            viewModel.fillTracksHistory()
             viewModel.getTrackHistory()
         }
 

@@ -6,6 +6,6 @@ interface SearchHistory {
     fun getHistory(): ArrayList<TrackDto>
     fun addTrackToHistory(track: TrackDto, onHistoryClick: () -> Unit)
     fun clearHistory()
-    fun fillTracksHistory()
+//    fun fillTracksHistory()
     fun getTracks(): ArrayList<TrackDto>
 }

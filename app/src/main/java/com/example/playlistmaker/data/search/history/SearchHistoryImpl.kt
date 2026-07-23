@@ -5,10 +5,7 @@ import com.example.playlistmaker.data.search.dto.TrackDto
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistoryImpl(private val sharedPreferences: SharedPreferences) : SearchHistory {
-    private val tracks = ArrayList<TrackDto>()
-    private val gson = Gson()
-
+class SearchHistoryImpl(private val sharedPreferences: SharedPreferences, private val gson: Gson) : SearchHistory {
     override fun getHistory(): ArrayList<TrackDto>{
         val history = sharedPreferences.getString(HISTORY_KEY, null) ?: return arrayListOf()
 
@@ -18,8 +15,8 @@ class SearchHistoryImpl(private val sharedPreferences: SharedPreferences) : Sear
     }
 
     override fun addTrackToHistory(track: TrackDto, onHistoryClick: () -> Unit){
-        fillTracksHistory()
 
+        val tracks = getHistory()
         tracks.removeAll {it.trackId == track.trackId}
 
         tracks.add(0, track)
@@ -39,15 +36,9 @@ class SearchHistoryImpl(private val sharedPreferences: SharedPreferences) : Sear
             .remove(HISTORY_KEY)
             .apply()
 
-        tracks.clear()
     }
 
-    override fun fillTracksHistory(){
-        tracks.clear()
-        tracks.addAll(getHistory())
-    }
-
-    override fun getTracks(): ArrayList<TrackDto> = tracks
+    override fun getTracks(): ArrayList<TrackDto> = getHistory()
 
     companion object {
         const val HISTORY_KEY = "history_key"
