@@ -160,4 +160,9 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
     </style>
+
+    <style name="TabText" parent="BoldText">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>

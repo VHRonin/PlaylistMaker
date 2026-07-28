@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.library.fragments.PlaylistsFragment"
+    android:paddingTop="@dimen/large_size"
+    android:paddingHorizontal="@dimen/large_size">
+
+    <Button
+        android:id="@+id/connectionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_playlist"
+        style="@style/RoundedButton"
+        android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:id="@+id/noTracksFoundError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="86dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/errorImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_not_found"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/BoldText"
+            android:textSize="@dimen/heading_text"
+            android:text="@string/no_playlist_created"
+            android:layout_marginTop="@dimen/normal_size"
+            android:textAlignment="center"
+            android:maxWidth="180dp"/>
+    </LinearLayout>
+
+</FrameLayout>
