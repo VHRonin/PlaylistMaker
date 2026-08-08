@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.library.activity.LibraryActivity"
+    tools:context=".ui.library.fragments.LibraryFragment"
     android:background="?attr/colorSecondaryVariant">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:title="@string/media_library"
-        app:navigationIcon="@drawable/ic_back_arrow"
         style="@style/ToolbarStyle"
         app:layout_constraintTop_toTopOf="parent"
         />
