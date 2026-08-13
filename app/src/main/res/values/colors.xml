@@ -9,4 +9,5 @@
     <color name="uncheckedSwitchColor">#ededed</color>
     <color name="lightGray">#E6E8EB</color>
     <color name="textGray">#AEAFB4</color>
+    <color name="bottom_nav_divider">@android:color/transparent</color>
 </resources>

@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/main"
-    style="@style/Background">
+    style="@style/Background"
+    tools:context=".ui.settings.fragment.SettingsFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settingsToolBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:title="@string/settings"
-        app:navigationIcon="@drawable/ic_back_arrow"
         style="@style/ToolbarStyle"/>
 
 
@@ -36,7 +37,7 @@
         style="@style/SettingsItemText"/>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/user_agreement"
+        android:id="@+id/userAgreement"
         android:text="@string/user_agreement"
         android:drawableEnd="@drawable/ic_forward_arrow"
         style="@style/SettingsItemText"/>

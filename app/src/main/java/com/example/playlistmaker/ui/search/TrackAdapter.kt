@@ -3,11 +3,13 @@ package com.example.playlistmaker.ui.search
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.search.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.search.models.Track
-import com.example.playlistmaker.ui.player.activity.PlayerActivity
+import com.example.playlistmaker.ui.player.PlayerNavArgs
+import com.example.playlistmaker.ui.player.fragment.PlayerFragment
 
 class TrackAdapter(private val debounceClick: () -> Boolean, private val onAddToHistoryClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
     var tracks: List<Track> = ArrayList()
@@ -32,18 +34,21 @@ class TrackAdapter(private val debounceClick: () -> Boolean, private val onAddTo
             val context = holder.itemView.context
 
             if (debounceClick()){
-                val playerIntent = Intent(context, PlayerActivity::class.java)
-                playerIntent.putExtra("artwork", track.getCoverArtwork())
-                playerIntent.putExtra("trackName", track.trackName)
-                playerIntent.putExtra("artistName", track.artistName)
-                playerIntent.putExtra("trackTime", track.trackTime)
-                playerIntent.putExtra("collectionName", track.collectionName)
-                playerIntent.putExtra("releaseDate", track.releaseDate)
-                playerIntent.putExtra("primaryGenreName", track.primaryGenreName)
-                playerIntent.putExtra("country", track.country)
-                playerIntent.putExtra("previewUrl", track.previewUrl)
+                val navArgs = PlayerNavArgs(
+                    track.getCoverArtwork(),
+                    track.trackName,
+                    track.artistName,
+                    track.trackTime,
+                    track.collectionName,
+                    track.releaseDate,
+                    track.primaryGenreName,
+                    track.country,
+                    track.previewUrl
+                )
 
-                context.startActivity(playerIntent)
+                it.findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                    PlayerFragment.createArgs(navArgs)
+                    )
 
                 onAddToHistoryClick(track)
             }

@@ -14,6 +14,7 @@ class ExternalNavigatorImpl(private val context: Context) : ExternalNavigator {
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_TEXT, link)
 
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(shareIntent)
     }
 
@@ -21,6 +22,7 @@ class ExternalNavigatorImpl(private val context: Context) : ExternalNavigator {
         val agreementIntent = Intent(Intent.ACTION_VIEW)
         agreementIntent.data = link.toUri()
 
+        agreementIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(agreementIntent)
     }
 
@@ -32,6 +34,7 @@ class ExternalNavigatorImpl(private val context: Context) : ExternalNavigator {
         supportIntent.putExtra(Intent.EXTRA_SUBJECT, emailData.subject)
         supportIntent.putExtra(Intent.EXTRA_TEXT, emailData.text)
 
+        supportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(supportIntent)
     }
 }
