@@ -53,7 +53,6 @@ class SearchViewModel(
         val current = isClickAllowed
         if (isClickAllowed){
             isClickAllowed = false
-//            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
             debounceClickJob = viewModelScope.launch {
                 delay(CLICK_DEBOUNCE_DELAY)
                 isClickAllowed = true
@@ -68,9 +67,6 @@ class SearchViewModel(
     }
 
     fun searchDebounce(){
-//        handler.removeCallbacks(searchRunnable)
-//        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-
         seaarchDebounceJob?.cancel()
         seaarchDebounceJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
@@ -118,7 +114,6 @@ class SearchViewModel(
 
     override fun onCleared() {
         super.onCleared()
-//        handler.removeCallbacks(searchRunnable)
         seaarchDebounceJob?.cancel()
     }
 
