@@ -8,12 +8,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.player.PlayerState
 import com.example.playlistmaker.domain.player.api.PlayerInteractor
 import com.example.playlistmaker.ui.player.PlayerUiState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
 
@@ -28,12 +33,11 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         )
     )
     fun observeState(): LiveData<PlayerUiState> = playerUiState
+    private var timerJob: Job? = null
 
-    private val handler = Handler(Looper.getMainLooper())
-    private lateinit var mediaRunnable: Runnable
-
-    fun releasePlayer(){
+    fun releasePlayer() {
         playerInteractor.releasePlayer()
+        timerJob?.cancel()
     }
 
     fun pausePlayer(){
@@ -42,6 +46,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
                 playerUiState.value?.copy(playerState = PlayerState.Paused)
             )
         }
+        timerJob?.cancel()
     }
 
     fun handlePlayButton(){
@@ -70,26 +75,18 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
             )
         }
 
-        mediaRunnable = createPlayerRunnable()
-        handler.post(mediaRunnable)
+        timerJob = viewModelScope.launch {
+            run()
+        }
     }
 
-
-    private fun createPlayerRunnable(): Runnable {
-        return object: Runnable {
-            override fun run() {
-                when (playerInteractor.getPlayerState()){
-                    is PlayerState.Playing -> {
-                        playerUiState.postValue(
-                            playerUiState.value?.copy(trackTimer = playerInteractor.getCurrentTIme())
-                        )
-                        handler.postDelayed(this, TRACK_TIME_DELAY)
-                    }
-                    is PlayerState.Paused -> {
-                        handler.removeCallbacks(this)
-                    }
-                    else -> {}
-                }
+    private suspend fun run() {
+        while (playerInteractor.getPlayerState() is PlayerState.Playing){
+            delay(TRACK_TIME_DELAY)
+            if (playerInteractor.getPlayerState() is PlayerState.Playing){
+                playerUiState.postValue(
+                    playerUiState.value?.copy(trackTimer = playerInteractor.getCurrentTIme())
+                )
             }
         }
     }
