@@ -11,8 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.playlistmaker.domain.db.api.SavedTracksInteractor
 import com.example.playlistmaker.domain.player.PlayerState
 import com.example.playlistmaker.domain.player.api.PlayerInteractor
+import com.example.playlistmaker.domain.search.models.Track
+import com.example.playlistmaker.ui.player.PlayerNavArgs
 import com.example.playlistmaker.ui.player.PlayerUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
@@ -20,7 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
+class PlayerViewModel(private val playerInteractor: PlayerInteractor, private val savedTracksInteractor: SavedTracksInteractor) : ViewModel() {
 
     companion object{
         const val TRACK_TIME_DELAY = 300L
@@ -29,11 +32,32 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     private val playerUiState = MutableLiveData<PlayerUiState>(
         PlayerUiState(
             playerState = PlayerState.Default,
-            trackTimer = "00:00"
+            trackTimer = "00:00",
+            isFavorite = false
         )
     )
     fun observeState(): LiveData<PlayerUiState> = playerUiState
     private var timerJob: Job? = null
+
+    fun onSaveClicked(playerNavArgs: PlayerNavArgs){
+        val track = Track(
+            playerNavArgs.trackName,
+            playerNavArgs.artistName,
+            playerNavArgs.trackTime,
+            playerNavArgs.artwork,
+            playerNavArgs.trackId,
+            playerNavArgs.collectionName,
+            playerNavArgs.releaseDate,
+            playerNavArgs.primaryGenreName,
+            playerNavArgs.country,
+            playerNavArgs.previewUrl!!,
+            playerNavArgs.isFavorite
+        )
+        viewModelScope.launch {
+            val isFavorite = savedTracksInteractor.save(track)
+            playerUiState.postValue(playerUiState.value?.copy(isFavorite = isFavorite))
+        }
+    }
 
     fun releasePlayer() {
         playerInteractor.releasePlayer()

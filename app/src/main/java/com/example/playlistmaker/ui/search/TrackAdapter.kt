@@ -43,7 +43,9 @@ class TrackAdapter(private val debounceClick: () -> Boolean, private val onAddTo
                     track.releaseDate,
                     track.primaryGenreName,
                     track.country,
-                    track.previewUrl
+                    track.previewUrl,
+                    track.trackId,
+                    track.isFavorite
                 )
 
                 it.findNavController().navigate(R.id.action_searchFragment_to_playerFragment,

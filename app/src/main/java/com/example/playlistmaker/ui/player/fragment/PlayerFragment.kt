@@ -52,6 +52,10 @@ class PlayerFragment : Fragment() {
         initValues()
         checkValues()
 
+        binding.likeButton.setOnClickListener {
+            viewModel.onSaveClicked(args)
+        }
+
         viewModel.observeState().observe(viewLifecycleOwner){
             when(it.playerState){
                 is PlayerState.Paused, is PlayerState.Prepared -> binding.playerButton.setImageResource(R.drawable.ic_play_button)
@@ -59,6 +63,8 @@ class PlayerFragment : Fragment() {
             }
 
             binding.trackCurrentTime.text = it.trackTimer
+
+            binding.likeButton.setImageResource(if (it.isFavorite) R.drawable.ic_like_button_active else R.drawable.ic_like_button)
         }
 
         viewModel.preparePlayer(previewUrl)
