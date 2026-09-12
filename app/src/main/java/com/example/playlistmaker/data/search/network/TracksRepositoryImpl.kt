@@ -6,15 +6,17 @@ import com.example.playlistmaker.data.search.dto.TracksResponse
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.TracksRepository
 import com.example.playlistmaker.domain.search.models.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.Locale
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
-    override fun searchTracks(term: String): SearchResult {
+    override fun searchTracks(term: String): Flow<SearchResult> = flow {
         val response = networkClient.doRequest(TracksRequest(term))
 
         if (response.resultCode == 200){
             if ((response as TracksResponse).results.isNotEmpty()){
-                return SearchResult.Success(
+                emit(SearchResult.Success(
                     response.results.map {
                         Track(
                             it.trackName,
@@ -29,14 +31,14 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                             it.previewUrl
                         )
                     }, response.resultCode
-                )
+                ))
             }
             else {
-                return SearchResult.NothingFound(response.resultCode)
+                emit(SearchResult.NothingFound(response.resultCode))
             }
         }
         else {
-            return SearchResult.NetworkError(response.resultCode)
+            emit(SearchResult.NetworkError(response.resultCode))
         }
     }
 

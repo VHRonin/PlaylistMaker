@@ -8,12 +8,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.search.SearchResult
 import com.example.playlistmaker.domain.search.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.search.api.TracksInteractor
 import com.example.playlistmaker.domain.search.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -41,14 +45,18 @@ class SearchViewModel(
     private var searchString: String = TEXT
     private var lastFailedTerm = ""
     private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable{findTracks(searchString)}
+    private var lastSearchedTerm: String? = null
+    private var debounceClickJob: Job? = null
+    private var seaarchDebounceJob: Job? = null
 
     fun debounceClick(): Boolean{
         val current = isClickAllowed
         if (isClickAllowed){
             isClickAllowed = false
-            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+            debounceClickJob = viewModelScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
         }
 
         return current
@@ -59,8 +67,11 @@ class SearchViewModel(
     }
 
     fun searchDebounce(){
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+        seaarchDebounceJob?.cancel()
+        seaarchDebounceJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            findTracks(searchString)
+        }
     }
 
     fun clearTracks(){
@@ -103,57 +114,63 @@ class SearchViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        handler.removeCallbacks(searchRunnable)
+        seaarchDebounceJob?.cancel()
     }
 
     private fun findTracks(text: String){
         if (text.isNotEmpty()){
+            if (text == lastSearchedTerm && searchUiState.value?.searchState is SearchState.Result){
+                return
+            }
+
             clearTracks()
             searchUiState.postValue(searchUiState.value?.copy().apply { this?.searchState = SearchState.Loading })
 
-            tracksInteractor.searchTracks(
-                text,
-                object : TracksInteractor.TracksConsumer{
-                    override fun consume(searchResult: SearchResult) {
-                        Handler(Looper.getMainLooper()).post {
-                            when (searchResult){
-                                is SearchResult.Success -> {
-                                    searchUiState.postValue(
-                                        searchUiState.value?.copy().apply {
-                                            this?.tracks?.clear()
-                                            this?.tracks?.addAll(searchResult.foundTracks)
-                                            this?.searchState = SearchState.Result(
-                                                SearchResult.Success(searchResult.foundTracks, searchResult.code)
-                                            )
-                                        }
-                                    )
-                                }
-                                is SearchResult.NothingFound -> {
-                                    searchUiState.postValue(
-                                        searchUiState.value?.copy().apply {
-                                            clearTracks()
-                                            this?.searchState = SearchState.Result(
-                                                SearchResult.NothingFound(searchResult.code)
-                                            )
-                                        }
-                                    )
-                                }
-                                else -> {
-                                    searchUiState.postValue(
-                                        searchUiState.value?.copy().apply {
-                                            clearTracks()
-                                            this?.searchState = SearchState.Result(
-                                                SearchResult.NetworkError((searchResult as SearchResult.NetworkError).code)
-                                            )
-                                        }
-                                    )
-                                    lastFailedTerm = searchString
-                                }
-                            }
-                        }
-                    }
+            viewModelScope.launch {
+                tracksInteractor.searchTracks(text).collect { searchResult ->
+                    processNetworkResult(searchResult, text)
                 }
-            )
+
+            }
+        }
+    }
+
+    private fun processNetworkResult(searchResult: SearchResult, text: String){
+        when (searchResult){
+            is SearchResult.Success -> {
+                lastSearchedTerm = text
+                searchUiState.postValue(
+                    searchUiState.value?.copy().apply {
+                        this?.tracks?.clear()
+                        this?.tracks?.addAll(searchResult.foundTracks)
+                        this?.searchState = SearchState.Result(
+                            SearchResult.Success(searchResult.foundTracks, searchResult.code)
+                        )
+                    }
+                )
+            }
+            is SearchResult.NothingFound -> {
+                lastSearchedTerm = text
+                searchUiState.postValue(
+                    searchUiState.value?.copy().apply {
+                        clearTracks()
+                        this?.searchState = SearchState.Result(
+                            SearchResult.NothingFound(searchResult.code)
+                        )
+                    }
+                )
+            }
+            else -> {
+                searchUiState.postValue(
+                    searchUiState.value?.copy().apply {
+                        clearTracks()
+                        this?.searchState = SearchState.Result(
+                            SearchResult.NetworkError((searchResult as SearchResult.NetworkError).code)
+                        )
+                    }
+                )
+                lastFailedTerm = searchString
+            }
         }
     }
 }
