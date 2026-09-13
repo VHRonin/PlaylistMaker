@@ -1,14 +1,15 @@
 package com.example.playlistmaker.data.search.history
 
 import android.icu.text.SimpleDateFormat
+import com.example.playlistmaker.data.db.AppDatabase
 import com.example.playlistmaker.data.search.dto.TrackDto
 import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.models.Track
 import java.util.Locale
 
-class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory) :
+class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory, private val appDb: AppDatabase) :
     SearchHistoryRepository {
-    override fun getHistory(): ArrayList<Track> {
+    override suspend fun getHistory(): ArrayList<Track> {
         val tracks = searchHistory.getHistory()
 
         return tracks.map {
@@ -27,7 +28,7 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory) :
         searchHistory.clearHistory()
     }
 
-    override fun getTracks(): ArrayList<Track> {
+    override suspend fun getTracks(): ArrayList<Track> {
         return searchHistory.getTracks().map {
             formatTrackFromDto(it)
         } as ArrayList<Track>
@@ -44,11 +45,13 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory) :
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.previewUrl
+            track.previewUrl,
+            track.isFavorite
         )
     }
 
-    private fun formatTrackFromDto(track: TrackDto): Track {
+    private suspend fun formatTrackFromDto(track: TrackDto): Track {
+        val savedTracksIds = appDb.trackDao().getTracksIds()
         return Track(
             track.trackName,
             track.artistName,
@@ -59,7 +62,8 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory) :
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.previewUrl
+            track.previewUrl,
+            track.trackId.toString() in savedTracksIds
         )
     }
 

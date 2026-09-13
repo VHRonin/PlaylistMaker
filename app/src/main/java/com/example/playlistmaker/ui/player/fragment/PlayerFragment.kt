@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui.player.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -67,7 +68,7 @@ class PlayerFragment : Fragment() {
             binding.likeButton.setImageResource(if (it.isFavorite) R.drawable.ic_like_button_active else R.drawable.ic_like_button)
         }
 
-        viewModel.preparePlayer(previewUrl)
+        viewModel.preparePlayer(previewUrl, args.isFavorite)
 
         binding.playerButton.setOnClickListener {
             viewModel.handlePlayButton()

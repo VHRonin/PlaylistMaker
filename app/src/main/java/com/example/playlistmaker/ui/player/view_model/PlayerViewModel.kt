@@ -54,10 +54,14 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor, private va
             playerNavArgs.isFavorite
         )
         viewModelScope.launch {
-            val isFavorite = savedTracksInteractor.save(track)
+            val isFavorite = if (playerUiState.value!!.isFavorite) deleteTrack(track) else saveTrack(track)
             playerUiState.postValue(playerUiState.value?.copy(isFavorite = isFavorite))
         }
     }
+
+    private suspend fun saveTrack(track: Track): Boolean = savedTracksInteractor.save(track)
+
+    private suspend fun deleteTrack(track: Track): Boolean = savedTracksInteractor.delete(track)
 
     fun releasePlayer() {
         playerInteractor.releasePlayer()
@@ -81,14 +85,14 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor, private va
         }
     }
 
-    fun preparePlayer(previewUrl: String){
+    fun preparePlayer(previewUrl: String, isFavorite: Boolean){
         playerInteractor.preparePlayer(previewUrl){
             playerUiState.postValue(
-                PlayerUiState(playerState = PlayerState.Prepared, trackTimer = "00:00")
+                playerUiState.value?.copy(playerState = PlayerState.Prepared, trackTimer = "00:00")
             )
         }
         playerUiState.postValue(
-            playerUiState.value?.copy(playerState = PlayerState.Prepared)
+            playerUiState.value?.copy(playerState = PlayerState.Prepared, isFavorite = isFavorite)
         )
     }
 

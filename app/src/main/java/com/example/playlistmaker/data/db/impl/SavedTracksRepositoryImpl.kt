@@ -21,7 +21,8 @@ class SavedTracksRepositoryImpl(private val appDb: AppDatabase, private val trac
 
     override fun getSavedTracks(): Flow<List<Track>> = flow {
         val foundTracks = appDb.trackDao().getTracks()
-        emit(convertTracks(foundTracks))
+        val convertedTracks = convertTracks(foundTracks)
+        emit(convertedTracks.reversed())
     }
 
     private fun convertTracks(tracks: List<TrackEntity>): List<Track>{

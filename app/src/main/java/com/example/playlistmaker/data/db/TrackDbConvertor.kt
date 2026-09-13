@@ -29,7 +29,8 @@ class TrackDbConvertor {
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.previewUrl!!
+            track.previewUrl!!,
+            true
         )
     }
 }

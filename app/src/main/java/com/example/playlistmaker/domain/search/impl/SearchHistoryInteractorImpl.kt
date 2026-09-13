@@ -6,7 +6,7 @@ import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
 
 class SearchHistoryInteractorImpl(private val searchHistoryRepository: SearchHistoryRepository) :
     SearchHistoryInteractor {
-    override fun getHistory(): ArrayList<Track> {
+    override suspend fun getHistory(): ArrayList<Track> {
         return searchHistoryRepository.getHistory()
     }
 
@@ -21,7 +21,7 @@ class SearchHistoryInteractorImpl(private val searchHistoryRepository: SearchHis
         searchHistoryRepository.clearHistory()
     }
 
-    override fun getTracks(): ArrayList<Track> {
+    override suspend fun getTracks(): ArrayList<Track> {
         return searchHistoryRepository.getTracks()
     }
 }

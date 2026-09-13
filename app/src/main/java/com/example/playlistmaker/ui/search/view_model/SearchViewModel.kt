@@ -100,12 +100,14 @@ class SearchViewModel(
     }
 
     fun getTrackHistory(){
-        searchUiState.postValue(
-            searchUiState.value?.copy().apply {
-                this?.historyTracks?.clear()
-                this?.historyTracks?.addAll(searchHistoryInteractor.getHistory())
-            }
-        )
+        viewModelScope.launch {
+            searchUiState.postValue(
+                searchUiState.value?.copy().apply {
+                    this?.historyTracks?.clear()
+                    this?.historyTracks?.addAll(searchHistoryInteractor.getHistory())
+                }
+            )
+        }
     }
 
     fun clearHistory(){

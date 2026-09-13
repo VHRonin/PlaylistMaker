@@ -26,6 +26,6 @@ val viewModelModule = module {
     }
 
     viewModel {
-        SavedTracksViewModel()
+        SavedTracksViewModel(get(), get())
     }
 }
