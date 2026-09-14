@@ -3,30 +3,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.library.fragments.SavedTracksFragment">
 
-    <LinearLayout
-        android:id="@+id/noTracksFoundError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingTop="106dp">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/errorImage"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/savedTracksRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginTop="@dimen/normal_size"
+            tools:listitem="@layout/track"
+            tools:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/noTracksFoundError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_not_found"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="106dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Medium400"
-            android:textSize="@dimen/heading_text"
-            android:text="@string/library_empty"
-            android:layout_marginTop="@dimen/normal_size"/>
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/errorImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_not_found"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Medium400"
+                android:textSize="@dimen/heading_text"
+                android:text="@string/library_empty"
+                android:layout_marginTop="@dimen/normal_size"/>
+        </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>

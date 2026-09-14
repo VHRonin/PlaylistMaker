@@ -8,12 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.search.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.search.models.Track
+import com.example.playlistmaker.ui.player.NavigationFrom
 import com.example.playlistmaker.ui.player.PlayerNavArgs
 import com.example.playlistmaker.ui.player.fragment.PlayerFragment
 
-class TrackAdapter(private val debounceClick: () -> Boolean, private val onAddToHistoryClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter(
+    private val debounceClick: () -> Boolean,
+    private val onAddToHistoryClick: (Track) -> Unit,
+    private val navigationFrom: NavigationFrom = NavigationFrom.SearchFragment
+) : RecyclerView.Adapter<TrackViewHolder>() {
     var tracks: List<Track> = ArrayList()
-    // var onClick: () -> Unit = {}
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -43,12 +47,22 @@ class TrackAdapter(private val debounceClick: () -> Boolean, private val onAddTo
                     track.releaseDate,
                     track.primaryGenreName,
                     track.country,
-                    track.previewUrl
+                    track.previewUrl,
+                    track.trackId,
+                    track.isFavorite
                 )
 
-                it.findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
-                    PlayerFragment.createArgs(navArgs)
+                if (navigationFrom == NavigationFrom.SearchFragment){
+                    it.findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                        PlayerFragment.createArgs(navArgs)
                     )
+                }
+                else{
+                    it.findNavController().navigate(R.id.action_libraryFragment_to_playerFragment,
+                        PlayerFragment.createArgs(navArgs)
+                    )
+                }
+
 
                 onAddToHistoryClick(track)
             }

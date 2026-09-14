@@ -11,8 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.playlistmaker.domain.db.api.SavedTracksInteractor
 import com.example.playlistmaker.domain.player.PlayerState
 import com.example.playlistmaker.domain.player.api.PlayerInteractor
+import com.example.playlistmaker.domain.search.models.Track
+import com.example.playlistmaker.ui.player.PlayerNavArgs
 import com.example.playlistmaker.ui.player.PlayerUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
@@ -20,7 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
+class PlayerViewModel(private val playerInteractor: PlayerInteractor, private val savedTracksInteractor: SavedTracksInteractor) : ViewModel() {
 
     companion object{
         const val TRACK_TIME_DELAY = 300L
@@ -29,11 +32,36 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     private val playerUiState = MutableLiveData<PlayerUiState>(
         PlayerUiState(
             playerState = PlayerState.Default,
-            trackTimer = "00:00"
+            trackTimer = "00:00",
+            isFavorite = false
         )
     )
     fun observeState(): LiveData<PlayerUiState> = playerUiState
     private var timerJob: Job? = null
+
+    fun onSaveClicked(playerNavArgs: PlayerNavArgs){
+        val track = Track(
+            playerNavArgs.trackName,
+            playerNavArgs.artistName,
+            playerNavArgs.trackTime,
+            playerNavArgs.artwork,
+            playerNavArgs.trackId,
+            playerNavArgs.collectionName,
+            playerNavArgs.releaseDate,
+            playerNavArgs.primaryGenreName,
+            playerNavArgs.country,
+            playerNavArgs.previewUrl!!,
+            playerNavArgs.isFavorite
+        )
+        viewModelScope.launch {
+            val isFavorite = if (playerUiState.value!!.isFavorite) deleteTrack(track) else saveTrack(track)
+            playerUiState.postValue(playerUiState.value?.copy(isFavorite = isFavorite))
+        }
+    }
+
+    private suspend fun saveTrack(track: Track): Boolean = savedTracksInteractor.save(track)
+
+    private suspend fun deleteTrack(track: Track): Boolean = savedTracksInteractor.delete(track)
 
     fun releasePlayer() {
         playerInteractor.releasePlayer()
@@ -57,15 +85,25 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         }
     }
 
-    fun preparePlayer(previewUrl: String){
+    fun preparePlayer(previewUrl: String, playerNavArgs: PlayerNavArgs){
         playerInteractor.preparePlayer(previewUrl){
             playerUiState.postValue(
-                PlayerUiState(playerState = PlayerState.Prepared, trackTimer = "00:00")
+                playerUiState.value?.copy(playerState = PlayerState.Prepared, trackTimer = "00:00")
             )
         }
+
         playerUiState.postValue(
             playerUiState.value?.copy(playerState = PlayerState.Prepared)
         )
+
+        viewModelScope.launch {
+            savedTracksInteractor.getTracksIds().collect { tracksIds ->
+                val isFavorite = playerNavArgs.trackId.toString() in tracksIds
+                playerUiState.postValue(
+                    playerUiState.value?.copy(isFavorite = isFavorite)
+                )
+            }
+        }
     }
 
     private fun startPlayer(){

@@ -13,4 +13,6 @@ data class PlayerNavArgs(
     val releaseDate: String?,
     val primaryGenreName: String?,
     val country: String?,
-    val previewUrl: String?) : Parcelable
+    val previewUrl: String?,
+    val trackId: Long?,
+    val isFavorite: Boolean) : Parcelable
