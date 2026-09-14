@@ -60,6 +60,10 @@ val dataModule = module {
             .build()
     }
 
+    single {
+        get<AppDatabase>().trackDao()
+    }
+
     factory {
         TrackDbConvertor()
     }

@@ -7,4 +7,5 @@ interface SavedTracksRepository {
     suspend fun save(track: Track)
     suspend fun delete(track: Track)
     fun getSavedTracks(): Flow<List<Track>>
+    fun getTracksIds(): Flow<List<String>>
 }

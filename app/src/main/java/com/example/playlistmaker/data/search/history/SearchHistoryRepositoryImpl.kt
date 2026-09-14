@@ -7,9 +7,9 @@ import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.models.Track
 import java.util.Locale
 
-class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory, private val appDb: AppDatabase) :
+class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory) :
     SearchHistoryRepository {
-    override suspend fun getHistory(): ArrayList<Track> {
+    override fun getHistory(): ArrayList<Track> {
         val tracks = searchHistory.getHistory()
 
         return tracks.map {
@@ -28,7 +28,7 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory, priv
         searchHistory.clearHistory()
     }
 
-    override suspend fun getTracks(): ArrayList<Track> {
+    override fun getTracks(): ArrayList<Track> {
         return searchHistory.getTracks().map {
             formatTrackFromDto(it)
         } as ArrayList<Track>
@@ -50,8 +50,7 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory, priv
         )
     }
 
-    private suspend fun formatTrackFromDto(track: TrackDto): Track {
-        val savedTracksIds = appDb.trackDao().getTracksIds()
+    private fun formatTrackFromDto(track: TrackDto): Track {
         return Track(
             track.trackName,
             track.artistName,
@@ -62,8 +61,7 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory, priv
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.previewUrl,
-            track.trackId.toString() in savedTracksIds
+            track.previewUrl
         )
     }
 

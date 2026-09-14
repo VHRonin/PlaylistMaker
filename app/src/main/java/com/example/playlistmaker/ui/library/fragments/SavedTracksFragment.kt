@@ -23,14 +23,15 @@ class SavedTracksFragment : Fragment() {
     }
 
     private val viewModel by viewModel<SavedTracksViewModel>()
-    private lateinit var binding: FragmentSavedTracksBinding
+    private var _binding: FragmentSavedTracksBinding? = null
+    private val binding get() = _binding!!
     private lateinit var tracksAdapter: TrackAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSavedTracksBinding.inflate(inflater, container, false)
+        _binding = FragmentSavedTracksBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -58,6 +59,8 @@ class SavedTracksFragment : Fragment() {
         )
 
         binding.savedTracksRecyclerView.adapter = tracksAdapter
+
+        viewModel.searchSavedTracks()
     }
 
     private fun showContent(tracks: List<Track>){
@@ -66,8 +69,8 @@ class SavedTracksFragment : Fragment() {
         tracksAdapter.notifyDataSetChanged()
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.searchSavedTracks()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

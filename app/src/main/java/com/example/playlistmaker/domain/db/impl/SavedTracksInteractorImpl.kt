@@ -21,4 +21,5 @@ class SavedTracksInteractorImpl(private val savedTracksRepository: SavedTracksRe
     }
 
     override fun getSavedTracks(): Flow<List<Track>> = savedTracksRepository.getSavedTracks()
+    override fun getTracksIds(): Flow<List<String>> = savedTracksRepository.getTracksIds()
 }

@@ -17,10 +17,6 @@ class SavedTracksViewModel(
     private val savedTracksInteractor: SavedTracksInteractor,
     private val searchHistoryInteractor: SearchHistoryInteractor
 ) : ViewModel() {
-
-    init {
-        searchSavedTracks()
-    }
     private val savedTracksUiState = MutableLiveData<SavedTracksUiState>(
         SavedTracksUiState.Loading
     )

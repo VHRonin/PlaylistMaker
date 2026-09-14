@@ -68,7 +68,7 @@ class PlayerFragment : Fragment() {
             binding.likeButton.setImageResource(if (it.isFavorite) R.drawable.ic_like_button_active else R.drawable.ic_like_button)
         }
 
-        viewModel.preparePlayer(previewUrl, args.isFavorite)
+        viewModel.preparePlayer(previewUrl, args)
 
         binding.playerButton.setOnClickListener {
             viewModel.handlePlayButton()

@@ -24,11 +24,11 @@ val repositoryModule = module {
     }
 
     single<SearchHistoryRepository>{
-        SearchHistoryRepositoryImpl(get(), get())
+        SearchHistoryRepositoryImpl(get())
     }
 
     single<TracksRepository> {
-        TracksRepositoryImpl(get(), get())
+        TracksRepositoryImpl(get())
     }
 
     single<ThemeRepository> {

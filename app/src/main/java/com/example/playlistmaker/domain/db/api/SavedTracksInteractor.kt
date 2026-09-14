@@ -7,4 +7,5 @@ interface SavedTracksInteractor {
     suspend fun save(track: Track): Boolean
     suspend fun delete(track: Track): Boolean
     fun getSavedTracks(): Flow<List<Track>>
+    fun getTracksIds(): Flow<List<String>>
 }

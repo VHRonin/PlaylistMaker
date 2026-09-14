@@ -85,15 +85,25 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor, private va
         }
     }
 
-    fun preparePlayer(previewUrl: String, isFavorite: Boolean){
+    fun preparePlayer(previewUrl: String, playerNavArgs: PlayerNavArgs){
         playerInteractor.preparePlayer(previewUrl){
             playerUiState.postValue(
                 playerUiState.value?.copy(playerState = PlayerState.Prepared, trackTimer = "00:00")
             )
         }
+
         playerUiState.postValue(
-            playerUiState.value?.copy(playerState = PlayerState.Prepared, isFavorite = isFavorite)
+            playerUiState.value?.copy(playerState = PlayerState.Prepared)
         )
+
+        viewModelScope.launch {
+            savedTracksInteractor.getTracksIds().collect { tracksIds ->
+                val isFavorite = playerNavArgs.trackId.toString() in tracksIds
+                playerUiState.postValue(
+                    playerUiState.value?.copy(isFavorite = isFavorite)
+                )
+            }
+        }
     }
 
     private fun startPlayer(){

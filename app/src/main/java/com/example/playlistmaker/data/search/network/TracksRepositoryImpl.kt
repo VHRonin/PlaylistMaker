@@ -11,13 +11,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.Locale
 
-class TracksRepositoryImpl(private val networkClient: NetworkClient, private val appDb: AppDatabase) : TracksRepository {
+class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
     override fun searchTracks(term: String): Flow<SearchResult> = flow {
         val response = networkClient.doRequest(TracksRequest(term))
 
         if (response.resultCode == 200){
             if ((response as TracksResponse).results.isNotEmpty()){
-                val savedTracksIds = appDb.trackDao().getTracksIds()
                 emit(SearchResult.Success(
                     response.results.map {
                         Track(
@@ -30,8 +29,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient, private val
                             it.releaseDate,
                             it.primaryGenreName,
                             it.country,
-                            it.previewUrl,
-                            it.trackId.toString() in savedTracksIds
+                            it.previewUrl
                         )
                     }, response.resultCode
                 ))
