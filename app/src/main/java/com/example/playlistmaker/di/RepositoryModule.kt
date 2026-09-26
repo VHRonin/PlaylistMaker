@@ -1,10 +1,12 @@
 package com.example.playlistmaker.di
 
 import android.content.Context
+import com.example.playlistmaker.data.db.impl.SavedTracksRepositoryImpl
 import com.example.playlistmaker.data.player.PlayerRepositoryImpl
 import com.example.playlistmaker.data.search.history.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.data.search.network.TracksRepositoryImpl
 import com.example.playlistmaker.data.settings.ThemeRepositoryImpl
+import com.example.playlistmaker.domain.db.api.SavedTracksRepository
 import com.example.playlistmaker.domain.player.api.PlayerRepository
 import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.api.TracksRepository
@@ -31,6 +33,10 @@ val repositoryModule = module {
 
     single<ThemeRepository> {
         ThemeRepositoryImpl(get(named(APP_PREFERENCES)))
+    }
+
+    single<SavedTracksRepository>{
+        SavedTracksRepositoryImpl(get(), get())
     }
 }
 

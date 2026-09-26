@@ -4,5 +4,6 @@ import com.example.playlistmaker.domain.player.PlayerState
 
 data class PlayerUiState(
     val playerState: PlayerState,
-    val trackTimer: String
+    val trackTimer: String,
+    var isFavorite: Boolean = false
 )

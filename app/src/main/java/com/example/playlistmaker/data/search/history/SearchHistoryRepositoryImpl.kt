@@ -1,6 +1,7 @@
 package com.example.playlistmaker.data.search.history
 
 import android.icu.text.SimpleDateFormat
+import com.example.playlistmaker.data.db.AppDatabase
 import com.example.playlistmaker.data.search.dto.TrackDto
 import com.example.playlistmaker.domain.search.api.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.models.Track
@@ -44,7 +45,8 @@ class SearchHistoryRepositoryImpl(private val searchHistory: SearchHistory) :
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.previewUrl
+            track.previewUrl,
+            track.isFavorite
         )
     }
 

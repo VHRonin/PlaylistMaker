@@ -7,7 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentPlayerBinding
+import com.example.playlistmaker.databinding.FragmentSavedTracksBinding
+import com.example.playlistmaker.domain.search.models.Track
+import com.example.playlistmaker.ui.library.SavedTracksUiState
 import com.example.playlistmaker.ui.library.view_model.SavedTracksViewModel
+import com.example.playlistmaker.ui.player.NavigationFrom
+import com.example.playlistmaker.ui.search.TrackAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SavedTracksFragment : Fragment() {
@@ -17,17 +23,54 @@ class SavedTracksFragment : Fragment() {
     }
 
     private val viewModel by viewModel<SavedTracksViewModel>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
-    }
+    private var _binding: FragmentSavedTracksBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var tracksAdapter: TrackAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_saved_tracks, container, false)
+        _binding = FragmentSavedTracksBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.observeState().observe(viewLifecycleOwner){
+            when (it){
+                is SavedTracksUiState.Error -> {
+                    binding.noTracksFoundError.visibility = View.VISIBLE
+                    tracksAdapter.tracks = emptyList()
+                    tracksAdapter.notifyDataSetChanged()
+                }
+                is SavedTracksUiState.Loading -> {binding.noTracksFoundError.visibility = View.GONE}
+                is SavedTracksUiState.Content -> {showContent(it.tracks)}
+            }
+        }
+
+        tracksAdapter = TrackAdapter(
+            debounceClick = { viewModel.debounceClick() },
+            onAddToHistoryClick = {track ->
+                viewModel.addTrackToHistory(track)
+            },
+            navigationFrom = NavigationFrom.LibraryFragment
+        )
+
+        binding.savedTracksRecyclerView.adapter = tracksAdapter
+
+        viewModel.searchSavedTracks()
+    }
+
+    private fun showContent(tracks: List<Track>){
+        binding.noTracksFoundError.visibility = View.GONE
+        tracksAdapter.tracks = tracks
+        tracksAdapter.notifyDataSetChanged()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
