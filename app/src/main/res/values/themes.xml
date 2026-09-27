@@ -10,6 +10,8 @@
         <item name="colorSurface">@color/lightGray</item>
         <item name="colorControlActivated">#03DAC6</item>
         <item name="editTextColor">@color/textGray</item>
+        <item name="snackbarStyle">@style/AppSnackbar</item>
+        <item name="snackbarTextViewStyle">@style/AppSnackbarText</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />

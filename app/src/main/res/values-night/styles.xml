@@ -168,4 +168,19 @@
         <item name="textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="AppSnackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:background">@color/white</item>
+        <item name="android:layout_marginHorizontal">7dp</item>
+        <item name="android:layout_marginBottom">@dimen/normal_size</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="AppSnackbarText" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAlignment">center</item>
+    </style>
 </resources>

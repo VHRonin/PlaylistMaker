@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.playlistmaker.data.db.TrackEntity
+import com.example.playlistmaker.data.db.entities.TrackEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
