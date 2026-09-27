@@ -166,4 +166,9 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="LightAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorPrimary">@color/blue</item>
+    </style>
+
 </resources>

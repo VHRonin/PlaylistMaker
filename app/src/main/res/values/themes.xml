@@ -9,6 +9,7 @@
         <item name="colorSecondaryFixed">@color/switchColor</item>
         <item name="colorSurface">@color/lightGray</item>
         <item name="colorControlActivated">#03DAC6</item>
+        <item name="editTextColor">@color/textGray</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />

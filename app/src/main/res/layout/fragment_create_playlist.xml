@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.create_playlist.fragment.CreatePlaylistFragment"
+    android:id="@+id/main"
+    style="@style/Background">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolBar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        app:title="@string/new_playlist"
+        app:navigationIcon="@drawable/ic_back_arrow"
+        style="@style/ToolbarStyle"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageButton
+        android:id="@+id/artwork"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="26dp"
+        app:layout_constraintDimensionRatio="h,1:1"
+        android:src="@drawable/ic_add_photo"
+        android:layout_marginHorizontal="@dimen/large_size"
+        android:background="@drawable/dash_rectangle"
+        android:scaleType="center"
+        app:layout_constraintTop_toBottomOf="@id/toolBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxCornerRadiusBottomStart="@dimen/small_size"
+        app:boxCornerRadiusTopEnd="@dimen/small_size"
+        app:boxCornerRadiusTopStart="@dimen/small_size"
+        app:boxCornerRadiusBottomEnd="@dimen/small_size"
+        android:hint="@string/name"
+        android:textColorHint="?attr/colorOnSecondary"
+        app:hintTextColor="@color/edit_text_color"
+        app:boxStrokeColor="@color/edit_text_color"
+        android:layout_marginHorizontal="@dimen/normal_size"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/artwork"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxCornerRadiusBottomStart="@dimen/small_size"
+        app:boxCornerRadiusTopEnd="@dimen/small_size"
+        app:boxCornerRadiusTopStart="@dimen/small_size"
+        app:boxCornerRadiusBottomEnd="@dimen/small_size"
+        android:hint="@string/desc"
+        android:textColorHint="?attr/colorOnSecondary"
+        app:hintTextColor="@color/edit_text_color"
+        app:boxStrokeColor="@color/edit_text_color"
+        android:layout_marginTop="@dimen/normal_size"
+        android:layout_marginHorizontal="@dimen/normal_size"
+        app:layout_constraintTop_toBottomOf="@id/inputName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/createPlaylistButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/create"
+        android:textAllCaps="false"
+        android:layout_marginHorizontal="17dp"
+        android:layout_marginBottom="32dp"
+        android:paddingVertical="12.5dp"
+        style="@style/BoldText"
+        android:textSize="@dimen/medium_text"
+        android:textColor="@color/white"
+        android:backgroundTint="@drawable/button_selector"
+        app:cornerRadius="8dp"
+        android:enabled="false"
+        android:letterSpacing="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
