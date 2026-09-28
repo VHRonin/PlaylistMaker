@@ -2,7 +2,7 @@ package com.example.playlistmaker.ui.library.view_model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.ui.library.SingleLiveEvent
+import com.example.playlistmaker.ui.SingleLiveEvent
 
 class LibraryViewModel : ViewModel() {
     private val showSnackBar = SingleLiveEvent<String>()

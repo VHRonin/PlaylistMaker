@@ -22,7 +22,7 @@ class PlaylistRepositoryImpl(private val playlistDao: PlaylistDao, private val p
     }
 
     override fun getAllPlaylists(): Flow<List<Playlist>> = playlistDao.getAllPlaylists().map { playlistEntities ->
-        convertPlaylists(playlistEntities)
+        convertPlaylists(playlistEntities).reversed()
     }
 
     private fun convertPlaylists(playlists: List<PlaylistEntity>): List<Playlist>{

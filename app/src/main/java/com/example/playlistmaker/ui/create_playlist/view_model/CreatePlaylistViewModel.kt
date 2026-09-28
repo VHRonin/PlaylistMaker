@@ -8,7 +8,7 @@ import androidx.sqlite.SQLiteException
 import com.example.playlistmaker.domain.db.api.PlaylistInteractor
 import com.example.playlistmaker.domain.db.model.Playlist
 import com.example.playlistmaker.ui.create_playlist.CreatePlaylistUiState
-import com.example.playlistmaker.ui.library.SingleLiveEvent
+import com.example.playlistmaker.ui.SingleLiveEvent
 import kotlinx.coroutines.launch
 
 class CreatePlaylistViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
