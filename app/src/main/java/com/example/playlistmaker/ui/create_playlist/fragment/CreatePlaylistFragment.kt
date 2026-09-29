@@ -32,9 +32,11 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentCreatePlaylistBinding
+import com.example.playlistmaker.ui.create_playlist.NavigateToCreatePlaylistFrom
 import com.example.playlistmaker.ui.create_playlist.view_model.CreatePlaylistViewModel
 import com.example.playlistmaker.ui.library.fragments.LibraryFragment
 import com.example.playlistmaker.ui.library.fragments.PlaylistsFragment
+import com.example.playlistmaker.ui.player.fragment.PlayerFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -44,7 +46,9 @@ import java.util.UUID
 class CreatePlaylistFragment : Fragment() {
 
     companion object {
+        private const val ARGS = "args"
         const val FILES_PATH = "playlistPictures"
+        fun createArgs(args: NavigateToCreatePlaylistFrom): Bundle = bundleOf(ARGS to args)
     }
 
     private var _binding: FragmentCreatePlaylistBinding? = null
@@ -53,6 +57,7 @@ class CreatePlaylistFragment : Fragment() {
 
     private var onBackPressedCallback: OnBackPressedCallback? = null
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+    private var args: NavigateToCreatePlaylistFrom? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,6 +77,10 @@ class CreatePlaylistFragment : Fragment() {
                     saveImageToPrivateStorage(uri, "${UUID.randomUUID()}")
                 }
             }
+
+        arguments?.let {
+            args = it.getParcelable(ARGS)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,7 +93,7 @@ class CreatePlaylistFragment : Fragment() {
             binding.apply {
                 setImageArtwork(it.artwork, artwork)
 
-                if (inputName.editText?.text?.isNotEmpty() == true)
+                if (inputName.editText?.text?.isNotEmpty() == true && inputName.editText?.text?.isNotBlank() == true)
                     createPlaylistButton.isEnabled = true
                 else createPlaylistButton.isEnabled = false
             }
@@ -108,10 +117,22 @@ class CreatePlaylistFragment : Fragment() {
         }
 
         viewModel.observeFInishCreation().observe(viewLifecycleOwner){
-            parentFragmentManager.setFragmentResult(
-                LibraryFragment.PLAYLIST_CREATED_KEY,
-                bundleOf(LibraryFragment.PLAYLIST_NAME_ARG_KEY to it)
-            )
+            when(args){
+                NavigateToCreatePlaylistFrom.LibraryFragment -> {
+                    parentFragmentManager.setFragmentResult(
+                        LibraryFragment.PLAYLIST_CREATED_KEY,
+                        bundleOf(LibraryFragment.PLAYLIST_NAME_ARG_KEY to it)
+                    )
+                }
+                NavigateToCreatePlaylistFrom.PlayerFragment -> {
+                    parentFragmentManager.setFragmentResult(
+                        PlayerFragment.PLAYLIST_CREATED_KEY,
+                        bundleOf(PlayerFragment.PLAYLIST_NAME_ARG_KEY to it)
+                    )
+                }
+
+                null -> {}
+            }
 
             findNavController().navigateUp()
         }

@@ -12,6 +12,8 @@ import com.example.playlistmaker.ui.library.view_model.PlaylistsViewModel
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.domain.db.model.Playlist
+import com.example.playlistmaker.ui.create_playlist.NavigateToCreatePlaylistFrom
+import com.example.playlistmaker.ui.create_playlist.fragment.CreatePlaylistFragment
 import com.example.playlistmaker.ui.library.PlaylistsAdapter
 import com.example.playlistmaker.ui.library.PlaylistsUiState
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -40,7 +42,8 @@ class PlaylistsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.createPlaylistButton.setOnClickListener {
-            findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment)
+            findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment,
+                CreatePlaylistFragment.createArgs(NavigateToCreatePlaylistFrom.LibraryFragment))
         }
 
 //        binding.playlistsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)

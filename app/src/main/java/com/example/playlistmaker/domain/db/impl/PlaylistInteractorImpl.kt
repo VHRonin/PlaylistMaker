@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository) : PlaylistInteractor {
     override suspend fun save(playlist: Playlist) {
+        playlist.playlistName = playlist.playlistName.trim()
+        playlist.playlistDesc = playlist.playlistDesc.trim()
         playlistRepository.insertPlaylist(playlist)
     }
 
