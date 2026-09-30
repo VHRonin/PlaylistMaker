@@ -105,6 +105,21 @@ class PlayerFragment : Fragment() {
             Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
         }
 
+        viewModel.observeShowPlaylistUpdated().observe(viewLifecycleOwner){ result ->
+            val messageRes = if (result.isSuccess) {
+                R.string.playlist_updated
+            } else {
+                R.string.playlist_update_error
+            }
+            val message = getString(messageRes, result.name)
+
+            if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+
+            Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true){
             if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -176,7 +191,11 @@ class PlayerFragment : Fragment() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        playlistsAdapter = PlaylistsBottomSheetAdapter()
+        playlistsAdapter = PlaylistsBottomSheetAdapter(
+            onSaveToPlaylistClick = { playlist ->
+                viewModel.onSaveToPlaylistsClicked(args, playlist)
+            }
+        )
         binding.playlists.adapter = playlistsAdapter
     }
 
@@ -188,6 +207,14 @@ class PlayerFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
+            binding.overlay.visibility = View.VISIBLE
+            binding.overlay.alpha = OVERLAY_MAX_ALPHA
+        }
     }
 
     companion object {

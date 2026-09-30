@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken
 class PlaylistDbConvertor(private val gson: Gson) {
     fun map(playlist: Playlist): PlaylistEntity =
         PlaylistEntity(
+            id = playlist.id,
             playlistName = playlist.playlistName,
             playlistDesc = playlist.playlistDesc,
             artworkPath = playlist.artworkPath,
@@ -21,7 +22,8 @@ class PlaylistDbConvertor(private val gson: Gson) {
             playlist.playlistName,
             playlist.playlistDesc,
             playlist.artworkPath,
-            gson.fromJson(playlist.tracksIds, object : TypeToken<List<Track>>() {}.type),
-            playlist.tracksNumber
+            gson.fromJson(playlist.tracksIds, object : TypeToken<List<Long>>() {}.type),
+            playlist.tracksNumber,
+            playlist.id
         )
 }

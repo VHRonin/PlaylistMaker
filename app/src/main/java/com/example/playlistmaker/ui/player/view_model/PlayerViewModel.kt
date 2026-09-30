@@ -20,6 +20,7 @@ import com.example.playlistmaker.domain.search.models.Track
 import com.example.playlistmaker.ui.SingleLiveEvent
 import com.example.playlistmaker.ui.player.PlayerNavArgs
 import com.example.playlistmaker.ui.player.PlayerUiState
+import com.example.playlistmaker.ui.player.UpdatePlaylistResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.async
@@ -50,12 +51,27 @@ class PlayerViewModel(
 
     private val showCreatedPlaylistSnackBar = SingleLiveEvent<String>()
     fun observeCreatedPlaylistShowSnackBar(): LiveData<String> = showCreatedPlaylistSnackBar
-
     fun onPlaylistCreatedResult(text: String){
         showCreatedPlaylistSnackBar.value = text
     }
+
+    private val showPlaylistUpdated = SingleLiveEvent<UpdatePlaylistResult>()
+    fun observeShowPlaylistUpdated(): LiveData<UpdatePlaylistResult> = showPlaylistUpdated
     private var timerJob: Job? = null
     private var isPrepareRequested: Boolean = false
+
+    fun onSaveToPlaylistsClicked(playerNavArgs: PlayerNavArgs, playlist: Playlist){
+        val track = argsToTrack(playerNavArgs)
+        if (track.trackId in playlist.tracksIds){
+            showPlaylistUpdated.value = UpdatePlaylistResult(playlist.playlistName, false)
+            return
+        }
+        viewModelScope.launch {
+            playlistInteractor.updateTracksIds(playlist, track)
+        }
+
+        showPlaylistUpdated.value = UpdatePlaylistResult(playlist.playlistName, true)
+    }
 
     fun searchPlaylists(){
         viewModelScope.launch {
@@ -66,19 +82,7 @@ class PlayerViewModel(
     }
 
     fun onSaveClicked(playerNavArgs: PlayerNavArgs){
-        val track = Track(
-            playerNavArgs.trackName,
-            playerNavArgs.artistName,
-            playerNavArgs.trackTime,
-            playerNavArgs.artwork,
-            playerNavArgs.trackId,
-            playerNavArgs.collectionName,
-            playerNavArgs.releaseDate,
-            playerNavArgs.primaryGenreName,
-            playerNavArgs.country,
-            playerNavArgs.previewUrl!!,
-            playerNavArgs.isFavorite
-        )
+        val track = argsToTrack(playerNavArgs)
         viewModelScope.launch {
             val isFavorite = if (playerUiState.value!!.isFavorite) deleteTrack(track) else saveTrack(track)
             playerUiState.postValue(playerUiState.value?.copy(isFavorite = isFavorite))
@@ -155,6 +159,22 @@ class PlayerViewModel(
                 )
             }
         }
+    }
+
+    private fun argsToTrack(playerNavArgs: PlayerNavArgs): Track{
+        return Track(
+            playerNavArgs.trackName,
+            playerNavArgs.artistName,
+            playerNavArgs.trackTime,
+            playerNavArgs.artwork,
+            playerNavArgs.trackId,
+            playerNavArgs.collectionName,
+            playerNavArgs.releaseDate,
+            playerNavArgs.primaryGenreName,
+            playerNavArgs.country,
+            playerNavArgs.previewUrl!!,
+            playerNavArgs.isFavorite
+        )
     }
 
     override fun onCleared() {

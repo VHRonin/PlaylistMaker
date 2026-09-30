@@ -1,6 +1,7 @@
 package com.example.playlistmaker.data.db.convertors
 
 import com.example.playlistmaker.data.db.entities.TrackEntity
+import com.example.playlistmaker.data.db.entities.TrackInPlaylistEntity
 import com.example.playlistmaker.domain.search.models.Track
 
 class TrackDbConvertor {
@@ -20,6 +21,37 @@ class TrackDbConvertor {
     }
 
     fun map(track: TrackEntity): Track {
+        return Track(
+            track.trackName,
+            track.artistName,
+            track.trackTime,
+            track.artworkUrl100,
+            track.id.toLong(),
+            track.collectionName,
+            track.releaseDate,
+            track.primaryGenreName,
+            track.country,
+            track.previewUrl!!,
+            true
+        )
+    }
+
+    fun mapTrackInPlaylist(track: Track): TrackInPlaylistEntity {
+        return TrackInPlaylistEntity(
+            track.trackId.toString(),
+            track.trackName,
+            track.artistName,
+            track.trackTime,
+            track.artworkUrl100,
+            track.collectionName,
+            track.releaseDate,
+            track.primaryGenreName,
+            track.country,
+            track.previewUrl
+        )
+    }
+
+    fun mapTrackInPlaylist(track: TrackInPlaylistEntity): Track {
         return Track(
             track.trackName,
             track.artistName,

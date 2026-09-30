@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.sqlite.SQLiteException
 import com.example.playlistmaker.domain.db.api.PlaylistInteractor
 import com.example.playlistmaker.domain.db.model.Playlist
+import com.example.playlistmaker.ui.create_playlist.CreatePlaylistResult
 import com.example.playlistmaker.ui.create_playlist.CreatePlaylistUiState
 import com.example.playlistmaker.ui.SingleLiveEvent
 import kotlinx.coroutines.launch
@@ -18,8 +19,8 @@ class CreatePlaylistViewModel(private val playlistInteractor: PlaylistInteractor
 
     fun observeState(): LiveData<CreatePlaylistUiState> = state
 
-    private val finishCreation = SingleLiveEvent<String>()
-    fun observeFInishCreation(): LiveData<String> = finishCreation
+    private val finishCreation = SingleLiveEvent<CreatePlaylistResult>()
+    fun observeFInishCreation(): LiveData<CreatePlaylistResult> = finishCreation
 
     fun onNameInputChanged(name: String){
         state.postValue(state.value?.copy(name = name))
@@ -38,7 +39,7 @@ class CreatePlaylistViewModel(private val playlistInteractor: PlaylistInteractor
             state.value!!.name,
             state.value!!.desc,
             state.value!!.artwork,
-            emptyList(),
+            mutableListOf(),
             0
         )
 
@@ -46,10 +47,10 @@ class CreatePlaylistViewModel(private val playlistInteractor: PlaylistInteractor
         val job = viewModelScope.launch {
             try {
                 playlistInteractor.save(playlist)
-                finishCreation.value = "Плейлист ${playlist.playlistName} создан"
+                finishCreation.value = CreatePlaylistResult(playlist.playlistName, true)
             }
             catch (e: SQLiteException){
-                finishCreation.value = "Не удалось создать плейлист ${playlist.playlistName}"
+                finishCreation.value = CreatePlaylistResult(playlist.playlistName, false)
             }
         }
     }

@@ -7,7 +7,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.db.model.Playlist
 import com.example.playlistmaker.ui.library.PlaylistsViewHolder
 
-class PlaylistsBottomSheetAdapter: RecyclerView.Adapter<PlaylistsBottomSheetViewHolder>() {
+class PlaylistsBottomSheetAdapter(private val onSaveToPlaylistClick: (Playlist) -> Unit): RecyclerView.Adapter<PlaylistsBottomSheetViewHolder>() {
     var playlists: List<Playlist> = ArrayList()
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -21,7 +21,12 @@ class PlaylistsBottomSheetAdapter: RecyclerView.Adapter<PlaylistsBottomSheetView
         holder: PlaylistsBottomSheetViewHolder,
         position: Int
     ) {
-        holder.bind(playlists[position])
+        val playlist = playlists[position]
+        holder.bind(playlist)
+
+        holder.itemView.setOnClickListener {
+            onSaveToPlaylistClick(playlist)
+        }
     }
 
     override fun getItemCount(): Int = playlists.size

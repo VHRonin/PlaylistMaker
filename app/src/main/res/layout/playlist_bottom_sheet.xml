@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:paddingVertical="@dimen/small_size"
-    android:paddingHorizontal="13dp">
+    android:paddingHorizontal="13dp"
+    android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/playlistImage"
@@ -26,6 +27,9 @@
         android:layout_marginStart="@dimen/small_size"
         style="@style/RegularText"
         android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="250dp"
 
         app:layout_constraintStart_toEndOf="@id/playlistImage"
         app:layout_constraintBottom_toTopOf="@id/tracksNum"

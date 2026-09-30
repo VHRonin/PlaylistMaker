@@ -117,17 +117,24 @@ class CreatePlaylistFragment : Fragment() {
         }
 
         viewModel.observeFInishCreation().observe(viewLifecycleOwner){
+            val messageRes = if (it.isSuccess) {
+                R.string.playlist_created
+            } else {
+                R.string.playlist_creation_error
+            }
+            val message = getString(messageRes, it.playlistName)
+
             when(args){
                 NavigateToCreatePlaylistFrom.LibraryFragment -> {
                     parentFragmentManager.setFragmentResult(
                         LibraryFragment.PLAYLIST_CREATED_KEY,
-                        bundleOf(LibraryFragment.PLAYLIST_NAME_ARG_KEY to it)
+                        bundleOf(LibraryFragment.PLAYLIST_NAME_ARG_KEY to message)
                     )
                 }
                 NavigateToCreatePlaylistFrom.PlayerFragment -> {
                     parentFragmentManager.setFragmentResult(
                         PlayerFragment.PLAYLIST_CREATED_KEY,
-                        bundleOf(PlayerFragment.PLAYLIST_NAME_ARG_KEY to it)
+                        bundleOf(PlayerFragment.PLAYLIST_NAME_ARG_KEY to message)
                     )
                 }
 

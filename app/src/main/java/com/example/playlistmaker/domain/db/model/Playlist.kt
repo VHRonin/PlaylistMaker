@@ -6,6 +6,7 @@ data class Playlist(
     var playlistName: String,
     var playlistDesc: String,
     val artworkPath: String,
-    val tracksIds: List<Track>,
-    val tracksNumber: Int
+    val tracksIds: MutableList<Long>,
+    var tracksNumber: Int,
+    val id: Long = 0
 )
