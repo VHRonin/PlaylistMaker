@@ -89,6 +89,22 @@ class CreatePlaylistFragment : Fragment() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolBar)
         binding.toolBar.setNavigationOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
 
+        prepareEditTextFields()
+        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true){
+            if (viewModel.hasUnsavedChanges()){
+                MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
+                    .setTitle(R.string.finish_playlist_creation_name)
+                    .setMessage(R.string.finish_playlist_creation_desc)
+                    .setNegativeButton(R.string.cancel) { dialog, which ->
+                    }
+                    .setPositiveButton(R.string.finish) { dialog, which ->
+                        findNavController().popBackStack()
+                    }
+                    .show()
+            }
+            else findNavController().popBackStack()
+        }
+
         viewModel.observeState().observe(viewLifecycleOwner){
             binding.apply {
                 setImageArtwork(it.artwork, artwork)
@@ -96,23 +112,6 @@ class CreatePlaylistFragment : Fragment() {
                 if (inputName.editText?.text?.isNotEmpty() == true && inputName.editText?.text?.isNotBlank() == true)
                     createPlaylistButton.isEnabled = true
                 else createPlaylistButton.isEnabled = false
-            }
-
-            prepareEditTextFields()
-
-            onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true){
-                if (viewModel.hasUnsavedChanges()){
-                    MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
-                        .setTitle(R.string.finish_playlist_creation_name)
-                        .setMessage(R.string.finish_playlist_creation_desc)
-                        .setNegativeButton(R.string.cancel) { dialog, which ->
-                        }
-                        .setPositiveButton(R.string.finish) { dialog, which ->
-                            findNavController().popBackStack()
-                        }
-                        .show()
-                }
-                else findNavController().popBackStack()
             }
         }
 

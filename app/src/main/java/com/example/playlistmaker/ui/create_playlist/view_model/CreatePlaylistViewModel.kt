@@ -44,14 +44,9 @@ class CreatePlaylistViewModel(private val playlistInteractor: PlaylistInteractor
         )
 
 
-        val job = viewModelScope.launch {
-            try {
-                playlistInteractor.save(playlist)
-                finishCreation.value = CreatePlaylistResult(playlist.playlistName, true)
-            }
-            catch (e: SQLiteException){
-                finishCreation.value = CreatePlaylistResult(playlist.playlistName, false)
-            }
+        viewModelScope.launch {
+            playlistInteractor.save(playlist)
+            finishCreation.value = CreatePlaylistResult(playlist.playlistName, true)
         }
     }
 

@@ -19,7 +19,7 @@ class PlaylistsBottomSheetViewHolder(view: View): RecyclerView.ViewHolder(view) 
     private val tracksNum = itemView.findViewById<TextView>(R.id.tracksNum)
 
     fun bind(playlist: Playlist){
-        val tracksOrTrackText = if(playlist.tracksNumber == 1) "трек" else if (playlist.tracksNumber > 1 && playlist.tracksNumber < 5) "трека" else "треков"
+        val tracksOrTrackText = itemView.resources.getQuantityString(R.plurals.tracks_Count, playlist.tracksNumber)
         val tracksNumText = "${playlist.tracksNumber} $tracksOrTrackText"
         val roundedCorners = dpToPx(2f, itemView.context)
         Glide
