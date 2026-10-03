@@ -1,10 +1,10 @@
-package com.example.playlistmaker.data.db
+package com.example.playlistmaker.data.db.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "track_table")
-data class TrackEntity(
+@Entity(tableName = "track_in_playlist_table")
+data class TrackInPlaylistEntity(
     @PrimaryKey
     val id: String,
     val trackName: String?,

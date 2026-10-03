@@ -11,19 +11,27 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.playlistmaker.domain.db.api.PlaylistInteractor
 import com.example.playlistmaker.domain.db.api.SavedTracksInteractor
+import com.example.playlistmaker.domain.db.model.Playlist
 import com.example.playlistmaker.domain.player.PlayerState
 import com.example.playlistmaker.domain.player.api.PlayerInteractor
 import com.example.playlistmaker.domain.search.models.Track
+import com.example.playlistmaker.ui.SingleLiveEvent
 import com.example.playlistmaker.ui.player.PlayerNavArgs
 import com.example.playlistmaker.ui.player.PlayerUiState
+import com.example.playlistmaker.ui.player.UpdatePlaylistResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor, private val savedTracksInteractor: SavedTracksInteractor) : ViewModel() {
+class PlayerViewModel(
+    private val playerInteractor: PlayerInteractor,
+    private val savedTracksInteractor: SavedTracksInteractor,
+    private val playlistInteractor: PlaylistInteractor
+) : ViewModel() {
 
     companion object{
         const val TRACK_TIME_DELAY = 300L
@@ -37,22 +45,44 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor, private va
         )
     )
     fun observeState(): LiveData<PlayerUiState> = playerUiState
+
+    private val playlistsState = MutableLiveData<List<Playlist>>()
+    fun observePlaylists(): LiveData<List<Playlist>> = playlistsState
+
+    private val showCreatedPlaylistSnackBar = SingleLiveEvent<String>()
+    fun observeCreatedPlaylistShowSnackBar(): LiveData<String> = showCreatedPlaylistSnackBar
+    fun onPlaylistCreatedResult(text: String){
+        showCreatedPlaylistSnackBar.value = text
+    }
+
+    private val showPlaylistUpdated = SingleLiveEvent<UpdatePlaylistResult>()
+    fun observeShowPlaylistUpdated(): LiveData<UpdatePlaylistResult> = showPlaylistUpdated
     private var timerJob: Job? = null
+    private var isPrepareRequested: Boolean = false
+
+    fun onSaveToPlaylistsClicked(playerNavArgs: PlayerNavArgs, playlist: Playlist){
+        val track = argsToTrack(playerNavArgs)
+        if (track.trackId in playlist.tracksIds){
+            showPlaylistUpdated.value = UpdatePlaylistResult(playlist.playlistName, false)
+            return
+        }
+        viewModelScope.launch {
+            playlistInteractor.updateTracksIds(playlist, track)
+        }
+
+        showPlaylistUpdated.value = UpdatePlaylistResult(playlist.playlistName, true)
+    }
+
+    fun searchPlaylists(){
+        viewModelScope.launch {
+            playlistInteractor.getAllPlaylists().collect { playlists ->
+                if (playlists.isNotEmpty()) playlistsState.value = playlists
+            }
+        }
+    }
 
     fun onSaveClicked(playerNavArgs: PlayerNavArgs){
-        val track = Track(
-            playerNavArgs.trackName,
-            playerNavArgs.artistName,
-            playerNavArgs.trackTime,
-            playerNavArgs.artwork,
-            playerNavArgs.trackId,
-            playerNavArgs.collectionName,
-            playerNavArgs.releaseDate,
-            playerNavArgs.primaryGenreName,
-            playerNavArgs.country,
-            playerNavArgs.previewUrl!!,
-            playerNavArgs.isFavorite
-        )
+        val track = argsToTrack(playerNavArgs)
         viewModelScope.launch {
             val isFavorite = if (playerUiState.value!!.isFavorite) deleteTrack(track) else saveTrack(track)
             playerUiState.postValue(playerUiState.value?.copy(isFavorite = isFavorite))
@@ -86,6 +116,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor, private va
     }
 
     fun preparePlayer(previewUrl: String, playerNavArgs: PlayerNavArgs){
+        if (isPrepareRequested) return
+        isPrepareRequested = true
         playerInteractor.preparePlayer(previewUrl){
             playerUiState.postValue(
                 playerUiState.value?.copy(playerState = PlayerState.Prepared, trackTimer = "00:00")
@@ -127,5 +159,26 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor, private va
                 )
             }
         }
+    }
+
+    private fun argsToTrack(playerNavArgs: PlayerNavArgs): Track{
+        return Track(
+            playerNavArgs.trackName,
+            playerNavArgs.artistName,
+            playerNavArgs.trackTime,
+            playerNavArgs.artwork,
+            playerNavArgs.trackId,
+            playerNavArgs.collectionName,
+            playerNavArgs.releaseDate,
+            playerNavArgs.primaryGenreName,
+            playerNavArgs.country,
+            playerNavArgs.previewUrl!!,
+            playerNavArgs.isFavorite
+        )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        releasePlayer()
     }
 }
