@@ -1,10 +1,13 @@
 package com.example.playlistmaker.data.db.impl
 
+import android.icu.text.SimpleDateFormat
+import android.icu.util.TimeZone
 import com.example.playlistmaker.data.db.convertors.PlaylistDbConvertor
 import com.example.playlistmaker.data.db.convertors.TrackDbConvertor
 import com.example.playlistmaker.data.db.dao.PlaylistDao
 import com.example.playlistmaker.data.db.dao.TrackInPlaylistDao
 import com.example.playlistmaker.data.db.entities.PlaylistEntity
+import com.example.playlistmaker.data.db.entities.TrackInPlaylistEntity
 import com.example.playlistmaker.domain.db.api.PlaylistRepository
 import com.example.playlistmaker.domain.db.model.Playlist
 import com.example.playlistmaker.domain.search.models.Track
@@ -12,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class PlaylistRepositoryImpl(
     private val playlistDao: PlaylistDao,
@@ -53,7 +57,27 @@ class PlaylistRepositoryImpl(
         return updated
     }
 
+    override fun getTracksByIds(ids: List<Long>): Flow<List<Track>> = trackInPlaylistDao.getTracksByIds(ids).map { trackInPlaylistEntities ->
+        convertTracksInPlaylist(trackInPlaylistEntities)
+    }
+
+    override fun getTracksDurationsByIds(ids: List<Long>): Flow<String> = trackInPlaylistDao.getTracksDurationsByIds(ids).map { durations ->
+        var durationSum: Long = 0
+        durations.map {
+            val sdf = SimpleDateFormat("mm", Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            val millis = sdf.parse(it)!!.time
+            durationSum += millis
+        }
+        SimpleDateFormat("mm", Locale.getDefault()).format(durationSum)
+    }
+
     private fun convertPlaylists(playlists: List<PlaylistEntity>): List<Playlist>{
         return playlists.map { playlistEntity -> playlistDbConvertor.map(playlistEntity) }
+    }
+
+    private fun convertTracksInPlaylist(trackInPlaylistEntities: List<TrackInPlaylistEntity>): List<Track>{
+        return trackInPlaylistEntities.map { track -> trackConvertor.mapTrackInPlaylist(track) }
     }
 }

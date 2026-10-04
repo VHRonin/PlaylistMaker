@@ -2,9 +2,12 @@ package com.example.playlistmaker.ui.library
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.db.model.Playlist
+import com.example.playlistmaker.ui.playlist.PlaylistNavArgs
+import com.example.playlistmaker.ui.playlist.fragment.PlaylistFragment
 
 class PlaylistsAdapter(): RecyclerView.Adapter<PlaylistsViewHolder>() {
     var playlists: List<Playlist> = ArrayList()
@@ -20,7 +23,13 @@ class PlaylistsAdapter(): RecyclerView.Adapter<PlaylistsViewHolder>() {
         holder: PlaylistsViewHolder,
         position: Int
     ) {
-        holder.bind(playlists[position])
+        val playlist = playlists[position]
+        holder.bind(playlist)
+
+        holder.itemView.setOnClickListener {
+            it.findNavController().navigate(R.id.action_libraryFragment_to_playlistFragment,
+                PlaylistFragment.createArgs(PlaylistNavArgs(playlist)))
+        }
     }
 
     override fun getItemCount(): Int = playlists.size
