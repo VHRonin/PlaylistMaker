@@ -12,17 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolBar"
-            android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_back_arrow"
-            style="@style/ToolbarStyle"
-            app:navigationIconTint="@color/black"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
         <ImageView
             android:id="@+id/playlistImage"
             android:layout_width="0dp"
@@ -34,33 +23,52 @@
             app:layout_constraintEnd_toEndOf="parent"
             />
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolBar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_back_arrow"
+            style="@style/ToolbarStyle"
+            app:navigationIconTint="@color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/startGuideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_begin="@dimen/normal_size" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/endGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="@dimen/normal_size" />
 
         <TextView
             android:id="@+id/name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="Best songs 2021"
             android:layout_marginTop="@dimen/large_size"
             style="@style/Bold700"
             android:textSize="24sp"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
-            app:layout_constraintTop_toBottomOf="@id/playlistImage"/>
+            app:layout_constraintTop_toBottomOf="@id/playlistImage"
+            app:layout_constraintEnd_toEndOf="@id/endGuideline"/>
 
         <TextView
             android:id="@+id/desc"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/small_size"
             tools:text="2022"
             style="@style/PlaylistText"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
-            app:layout_constraintTop_toBottomOf="@id/name"/>
+            app:layout_constraintTop_toBottomOf="@id/name"
+            app:layout_constraintEnd_toEndOf="@id/endGuideline"/>
 
         <TextView
             android:id="@+id/duration"

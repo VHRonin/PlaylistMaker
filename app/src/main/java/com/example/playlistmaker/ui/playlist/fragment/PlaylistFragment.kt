@@ -51,13 +51,21 @@ class PlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolBar)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
 
         initViewItems()
         showBottomSheet()
 
         viewModel.observeState().observe(viewLifecycleOwner){ state ->
-            binding.duration.text = "${state.tracksDuration} минут"
+            if (state.tracksDuration.isNotEmpty()){
+                val minutesCount = resources.getQuantityString(R.plurals.minutes_count, state.tracksDuration.toInt())
+                binding.duration.text = "${state.tracksDuration.toInt()} $minutesCount"
+            }
+            else {
+                val minutesCount = resources.getQuantityString(R.plurals.minutes_count, 0)
+                binding.duration.text = "0 $minutesCount"
+            }
         }
     }
 
