@@ -44,4 +44,7 @@
     <string name="playlist_creation_error">Не удалось создать плейлист %s</string>
     <string name="playlist_update_error">Трек уже добавлен в плейлист %s</string>
     <string name="playlist_updated">Добавлено в плейлист %s</string>
+    <string name="want_to_delete">Хотите удалить трек?</string>
+    <string name="YES">ДА</string>
+    <string name="NO">НЕТ</string>
 </resources>

@@ -13,6 +13,7 @@ import com.example.playlistmaker.domain.db.model.Playlist
 import com.example.playlistmaker.domain.search.models.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -71,6 +72,25 @@ class PlaylistRepositoryImpl(
             durationSum += millis
         }
         SimpleDateFormat("mm", Locale.getDefault()).format(durationSum)
+    }
+
+    override suspend fun deleteTrackById(id: Long, playlist: Playlist) = withContext(Dispatchers.IO){
+        playlist.tracksIds.remove(id)
+        playlist.tracksNumber = playlist.tracksIds.size
+
+        val playlistEntity = playlistDbConvertor.map(playlist)
+        val updated = playlistDao.updateTracksIds(playlistEntity.tracksIds, playlist.tracksNumber, playlistEntity.id)
+
+        val playlists = convertPlaylists(playlistDao.getAllPlaylists().first())
+        val isInPlaylist = playlists.any { playlist -> id in playlist.tracksIds }
+
+        if (!isInPlaylist){
+            trackInPlaylistDao.deleteTrack(id)
+        }
+    }
+
+    override fun getPlaylistById(id: Long): Flow<Playlist> = playlistDao.getPlaylistById(id).map { playlistEntity ->
+        playlistDbConvertor.map(playlistEntity)
     }
 
     private fun convertPlaylists(playlists: List<PlaylistEntity>): List<Playlist>{

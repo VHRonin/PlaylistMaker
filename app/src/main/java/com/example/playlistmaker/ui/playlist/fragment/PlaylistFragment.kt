@@ -13,29 +13,34 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistBinding
+import com.example.playlistmaker.domain.db.model.Playlist
+import com.example.playlistmaker.ui.player.NavigationFrom
 import com.example.playlistmaker.ui.player.fragment.PlayerFragment
 import com.example.playlistmaker.ui.playlist.PlaylistNavArgs
 import com.example.playlistmaker.ui.playlist.view_model.PlaylistViewModel
+import com.example.playlistmaker.ui.search.TrackAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
 
     companion object {
         private const val ARGS = "args"
-        fun createArgs(args: PlaylistNavArgs): Bundle = bundleOf(ARGS to args)
+        fun createArgs(playlistId: Long): Bundle = bundleOf(ARGS to playlistId)
     }
 
-    private lateinit var args: PlaylistNavArgs
+    private var id: Long? = null
 
     private val viewModel: PlaylistViewModel by viewModel()
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
+    private lateinit var trackAdapter: TrackAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            args = it.getParcelable(ARGS)!!
+            id = it.getLong(ARGS)
         }
     }
 
@@ -54,8 +59,16 @@ class PlaylistFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
 
-        initViewItems()
+        viewModel.getPlaylistById(id!!)
         showBottomSheet()
+
+        trackAdapter = TrackAdapter(
+            debounceClick = viewModel::debounceClick,
+            navigationFrom = NavigationFrom.PlaylistFragment,
+            onLongClick = {id -> showDeleteTrackMessage(id)}
+        )
+        binding.tracksRecyclerView.adapter = trackAdapter
+//        viewModel.searchTracks()
 
         viewModel.observeState().observe(viewLifecycleOwner){ state ->
             if (state.tracksDuration.isNotEmpty()){
@@ -66,23 +79,28 @@ class PlaylistFragment : Fragment() {
                 val minutesCount = resources.getQuantityString(R.plurals.minutes_count, 0)
                 binding.duration.text = "0 $minutesCount"
             }
+
+            initViewItems(state.playlist)
+
+            trackAdapter.tracks = state.tracks
+            trackAdapter.notifyDataSetChanged()
         }
     }
 
-    private fun initViewItems(){
-        viewModel.getTracksDuration(args.playlist.tracksIds)
+    private fun initViewItems(playlist: Playlist){
+//        viewModel.getTracksDuration(playlist.tracksIds)
         binding.apply {
             Glide
                 .with(this@PlaylistFragment)
-                .load(args.playlist.artworkPath)
+                .load(playlist.artworkPath)
                 .placeholder(R.drawable.ic_placeholder_track)
                 .error(R.drawable.ic_placeholder_track)
                 .transform(CenterCrop())
                 .into(playlistImage)
 
-            name.text = args.playlist.playlistName
-            desc.text = args.playlist.playlistDesc
-            tracksNum.text = "${args.playlist.tracksNumber} ${resources.getQuantityString(R.plurals.tracks_Count, args.playlist.tracksNumber)}"
+            name.text = playlist.playlistName
+            desc.text = playlist.playlistDesc
+            tracksNum.text = "${playlist.tracksNumber} ${resources.getQuantityString(R.plurals.tracks_Count, playlist.tracksNumber)}"
         }
     }
 
@@ -100,6 +118,17 @@ class PlaylistFragment : Fragment() {
         binding.shareButton.addOnLayoutChangeListener { _, _, top, _, bottom, _, oldTop, _, oldBottom ->
             if (top != oldTop || bottom != oldBottom) updatePeekHeight()
         }
+    }
+
+    private fun showDeleteTrackMessage(id: Long){
+        MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
+            .setTitle(R.string.want_to_delete)
+            .setNegativeButton(R.string.NO) { dialog, which ->
+            }
+            .setPositiveButton(R.string.YES) { dialog, which ->
+                viewModel.deleteTrack(id)
+            }
+            .show()
     }
 
     override fun onDestroyView() {

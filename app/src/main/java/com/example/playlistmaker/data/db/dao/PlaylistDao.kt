@@ -21,4 +21,7 @@ interface PlaylistDao {
 
     @Query("UPDATE playlist_table SET tracksIds = :tracksIds, tracksNumber = :tracksNum WHERE id = :id")
     fun updateTracksIds(tracksIds: String, tracksNum: Int, id: Long): Int
+
+    @Query("SELECT * FROM playlist_table WHERE id = :id")
+    fun getPlaylistById(id: Long): Flow<PlaylistEntity>
 }

@@ -28,7 +28,7 @@ class PlaylistsAdapter(): RecyclerView.Adapter<PlaylistsViewHolder>() {
 
         holder.itemView.setOnClickListener {
             it.findNavController().navigate(R.id.action_libraryFragment_to_playlistFragment,
-                PlaylistFragment.createArgs(PlaylistNavArgs(playlist)))
+                PlaylistFragment.createArgs(playlist.id))
         }
     }
 

@@ -14,8 +14,9 @@ import com.example.playlistmaker.ui.player.fragment.PlayerFragment
 
 class TrackAdapter(
     private val debounceClick: () -> Boolean,
-    private val onAddToHistoryClick: (Track) -> Unit,
-    private val navigationFrom: NavigationFrom = NavigationFrom.SearchFragment
+    private val onAddToHistoryClick: (Track) -> Unit = {},
+    private val navigationFrom: NavigationFrom = NavigationFrom.SearchFragment,
+    private val onLongClick: (Long) -> Unit = {}
 ) : RecyclerView.Adapter<TrackViewHolder>() {
     var tracks: List<Track> = ArrayList()
 
@@ -52,19 +53,32 @@ class TrackAdapter(
                     track.isFavorite
                 )
 
-                if (navigationFrom == NavigationFrom.SearchFragment){
-                    it.findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
-                        PlayerFragment.createArgs(navArgs)
-                    )
+                when (navigationFrom){
+                    NavigationFrom.SearchFragment ->{
+                        it.findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                            PlayerFragment.createArgs(navArgs)
+                        )
+                    }
+                    NavigationFrom.LibraryFragment -> {
+                        it.findNavController().navigate(R.id.action_libraryFragment_to_playerFragment,
+                            PlayerFragment.createArgs(navArgs)
+                        )
+                    }
+                    NavigationFrom.PlaylistFragment -> {
+                        it.findNavController().navigate(R.id.action_playlistFragment_to_playerFragment,
+                            PlayerFragment.createArgs(navArgs)
+                        )
+                    }
                 }
-                else{
-                    it.findNavController().navigate(R.id.action_libraryFragment_to_playerFragment,
-                        PlayerFragment.createArgs(navArgs)
-                    )
-                }
-
 
                 onAddToHistoryClick(track)
+            }
+        }
+
+        if (navigationFrom == NavigationFrom.PlaylistFragment){
+            holder.itemView.setOnLongClickListener {
+                onLongClick(track.trackId!!)
+                true
             }
         }
     }
