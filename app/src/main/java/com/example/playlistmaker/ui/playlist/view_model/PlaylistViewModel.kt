@@ -6,12 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.db.api.PlaylistInteractor
 import com.example.playlistmaker.domain.db.model.Playlist
+import com.example.playlistmaker.domain.sharing.SharingInteractor
 import com.example.playlistmaker.ui.playlist.PlaylistUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
+class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, private val sharingInteractor: SharingInteractor) : ViewModel() {
     private var state = MutableLiveData<PlaylistUiState>()
 
     fun observeState(): LiveData<PlaylistUiState> = state
@@ -63,6 +64,18 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor) : Vi
         viewModelScope.launch {
             playlistInteractor.deleteTrackById(id, state.value?.playlist!!)
         }
+    }
+
+    fun sharePlaylist(textNum: String){
+        var textToShare = "${state.value?.tracks?.size} $textNum\n"
+        val tracks = state.value?.tracks
+
+        tracks?.forEachIndexed { index, track ->
+            val text = "${index + 1}. ${track.artistName} - ${track.trackName} (${track.trackTime})\n"
+            textToShare += text
+        }
+
+        sharingInteractor.shareApp(textToShare)
     }
 
     companion object{

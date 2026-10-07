@@ -106,17 +106,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal_size"
             android:src="@drawable/ic_share"
-            android:background="@null"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:tint="@color/black"
             app:layout_constraintTop_toBottomOf="@id/duration"
-            app:layout_constraintStart_toEndOf="@id/startGuideline"/>
+            app:layout_constraintStart_toEndOf="@id/startGuideline" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/threePointsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/normal_size"
             android:src="@drawable/ic_three_points"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintStart_toEndOf="@id/shareButton"
             app:layout_constraintTop_toTopOf="@id/shareButton"
             app:layout_constraintBottom_toBottomOf="@id/shareButton"
@@ -131,7 +132,8 @@
         app:behavior_peekHeight="266dp"
         android:background="@drawable/bottom_sheet_shape"
         android:orientation="vertical"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="gone">
 
         <View
             android:layout_width="50dp"
@@ -147,5 +149,52 @@
             android:layout_marginTop="@dimen/medium_size"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/track"/>
+    </LinearLayout>
+
+    <View android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:alpha="0"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/editPlaylistBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="383dp"
+        android:background="@drawable/bottom_sheet_shape"
+        android:orientation="vertical"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        <View
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:background="@drawable/round_view_bottom_sheet_shape"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/small_size" />
+
+        <include
+            android:id="@+id/playlistBottomSheet"
+            layout="@layout/playlist_bottom_sheet"
+            android:layout_marginTop="@dimen/medium_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/shareButtonBottomSheet"
+            android:text="@string/share"
+            style="@style/SettingsItemText"
+            android:layout_marginTop="@dimen/small_size"/>
+
+        <TextView
+            android:id="@+id/editButtonBottomSheet"
+            android:text="@string/edit_info"
+            style="@style/SettingsItemText" />
+
+        <TextView
+            android:id="@+id/deleteButtonBottomSheet"
+            android:text="@string/delete_playlist"
+            style="@style/SettingsItemText" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -218,14 +218,6 @@ class PlayerFragment : Fragment() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
-//            binding.overlay.visibility = View.VISIBLE
-//            binding.overlay.alpha = OVERLAY_MAX_ALPHA
-//        }
-//    }
-
     companion object {
         private const val ARGS = "args"
 

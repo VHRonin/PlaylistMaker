@@ -1,9 +1,12 @@
 package com.example.playlistmaker.ui.playlist.fragment
 
+import android.content.Context
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -11,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistBinding
 import com.example.playlistmaker.domain.db.model.Playlist
@@ -28,6 +32,7 @@ class PlaylistFragment : Fragment() {
     companion object {
         private const val ARGS = "args"
         fun createArgs(playlistId: Long): Bundle = bundleOf(ARGS to playlistId)
+        private const val OVERLAY_MAX_ALPHA = 0.5f
     }
 
     private var id: Long? = null
@@ -36,6 +41,7 @@ class PlaylistFragment : Fragment() {
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
     private lateinit var trackAdapter: TrackAdapter
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +67,7 @@ class PlaylistFragment : Fragment() {
 
         viewModel.getPlaylistById(id!!)
         showBottomSheet()
+        prepareEditBottomSheet()
 
         trackAdapter = TrackAdapter(
             debounceClick = viewModel::debounceClick,
@@ -68,7 +75,6 @@ class PlaylistFragment : Fragment() {
             onLongClick = {id -> showDeleteTrackMessage(id)}
         )
         binding.tracksRecyclerView.adapter = trackAdapter
-//        viewModel.searchTracks()
 
         viewModel.observeState().observe(viewLifecycleOwner){ state ->
             if (state.tracksDuration.isNotEmpty()){
@@ -81,6 +87,7 @@ class PlaylistFragment : Fragment() {
             }
 
             initViewItems(state.playlist)
+            bindPlaylistBottomSheet(state.playlist)
 
             trackAdapter.tracks = state.tracks
             trackAdapter.notifyDataSetChanged()
@@ -88,7 +95,8 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun initViewItems(playlist: Playlist){
-//        viewModel.getTracksDuration(playlist.tracksIds)
+        val tracksCount = resources.getQuantityString(R.plurals.tracks_Count, playlist.tracksNumber)
+
         binding.apply {
             Glide
                 .with(this@PlaylistFragment)
@@ -100,7 +108,30 @@ class PlaylistFragment : Fragment() {
 
             name.text = playlist.playlistName
             desc.text = playlist.playlistDesc
-            tracksNum.text = "${playlist.tracksNumber} ${resources.getQuantityString(R.plurals.tracks_Count, playlist.tracksNumber)}"
+            tracksNum.text = "${playlist.tracksNumber} ${tracksCount}"
+
+            shareButton.setOnClickListener {
+                setShareClickListener(playlist, tracksCount)
+            }
+
+            shareButtonBottomSheet.setOnClickListener {
+                setShareClickListener(playlist, tracksCount)
+            }
+        }
+    }
+
+    private fun setShareClickListener(playlist: Playlist, tracksCount: String){
+        if (playlist.tracksNumber > 0){
+            viewModel.sharePlaylist(tracksCount)
+        }
+        else {
+            MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
+                .setTitle(R.string.nothing_to_share)
+                .setMessage(R.string.no_tracks)
+                .setPositiveButton(R.string.ok){ dialog, which ->
+
+                }
+                .show()
         }
     }
 
@@ -129,6 +160,61 @@ class PlaylistFragment : Fragment() {
                 viewModel.deleteTrack(id)
             }
             .show()
+    }
+
+    private fun prepareEditBottomSheet(){
+        val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = OVERLAY_MAX_ALPHA * (slideOffset + 1f).coerceIn(0f, 1f)
+            }
+        }
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.editPlaylistBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
+
+        binding.threePointsButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+    }
+
+    fun bindPlaylistBottomSheet(playlist: Playlist){
+        val tracksOrTrackText = resources.getQuantityString(R.plurals.tracks_Count, playlist.tracksNumber)
+        val tracksNumText = "${playlist.tracksNumber} $tracksOrTrackText"
+        val roundedCorners = dpToPx(2f, requireContext())
+        Glide
+            .with(this)
+            .load(playlist.artworkPath)
+            .placeholder(R.drawable.ic_placeholder_track)
+            .error(R.drawable.ic_placeholder_track)
+            .transform()
+            .transform(CenterCrop(), RoundedCorners(roundedCorners))
+            .into(binding.playlistBottomSheet.playlistImage)
+
+        binding.playlistBottomSheet.name.text = playlist.playlistName
+        binding.playlistBottomSheet.tracksNum.text = tracksNumText
+    }
+
+    private fun dpToPx(dp: Float, context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics).toInt()
     }
 
     override fun onDestroyView() {

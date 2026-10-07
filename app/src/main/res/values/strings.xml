@@ -47,4 +47,10 @@
     <string name="want_to_delete">Хотите удалить трек?</string>
     <string name="YES">ДА</string>
     <string name="NO">НЕТ</string>
+    <string name="no_tracks">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="ok">ок</string>
+    <string name="nothing_to_share">Нечем поделиться</string>
+    <string name="share">Поделиться</string>
+    <string name="edit_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
 </resources>
