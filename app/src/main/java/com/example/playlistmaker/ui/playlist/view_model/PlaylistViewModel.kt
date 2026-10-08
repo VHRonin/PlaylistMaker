@@ -19,9 +19,10 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, priv
 
     private var isClickAllowed = true
     private var debounceClickJob: Job? = null
+    private var playlistJob: Job? = null
 
     fun getPlaylistById(id: Long){
-        viewModelScope.launch {
+        playlistJob = viewModelScope.launch {
             playlistInteractor.getPlaylistById(id).collect { playlist ->
                 state.value = state.value?.copy(playlist = playlist) ?: PlaylistUiState("", emptyList(), playlist)
 
@@ -76,6 +77,16 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, priv
         }
 
         sharingInteractor.shareApp(textToShare)
+    }
+
+    fun deletePlaylist(onDeleted: () -> Unit){
+        val playlist = state.value?.playlist ?: return
+        playlistJob?.cancel()
+
+        viewModelScope.launch {
+            playlistInteractor.delete(playlist)
+            onDeleted()
+        }
     }
 
     companion object{

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -69,6 +70,11 @@ class PlaylistFragment : Fragment() {
         showBottomSheet()
         prepareEditBottomSheet()
 
+        binding.deleteButtonBottomSheet.setOnClickListener {
+            viewModel.deletePlaylist(onDeleted = {
+                findNavController().popBackStack()
+            })
+        }
         trackAdapter = TrackAdapter(
             debounceClick = viewModel::debounceClick,
             navigationFrom = NavigationFrom.PlaylistFragment,
@@ -190,6 +196,20 @@ class PlaylistFragment : Fragment() {
 
         binding.threePointsButton.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.overlay.setOnClickListener {
+            if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true){
+            if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN){
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+
+            else findNavController().popBackStack()
         }
     }
 

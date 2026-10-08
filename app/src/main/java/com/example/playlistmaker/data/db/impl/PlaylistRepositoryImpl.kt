@@ -34,6 +34,8 @@ class PlaylistRepositoryImpl(
         playlistDao.deletePlaylist(
             playlistDbConvertor.map(playlist)
         )
+
+        deleteTracksByIds(playlist.tracksIds)
     }
 
     override fun getAllPlaylists(): Flow<List<Playlist>> = playlistDao.getAllPlaylists().map { playlistEntities ->
@@ -86,6 +88,17 @@ class PlaylistRepositoryImpl(
 
         if (!isInPlaylist){
             trackInPlaylistDao.deleteTrack(id)
+        }
+    }
+
+    private suspend fun deleteTracksByIds(ids: List<Long>) = withContext(Dispatchers.IO){
+        ids.forEach { id ->
+            val playlists = convertPlaylists(playlistDao.getAllPlaylists().first())
+            val isInPlaylist = playlists.any { playlist -> id in playlist.tracksIds }
+
+            if (!isInPlaylist){
+                trackInPlaylistDao.deleteTrack(id)
+            }
         }
     }
 
