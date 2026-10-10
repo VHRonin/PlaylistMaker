@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentLibraryBinding
+import com.example.playlistmaker.ui.create_playlist.fragment.CreatePlaylistFragment
 import com.example.playlistmaker.ui.library.LibraryViewPagerAdapter
 import com.example.playlistmaker.ui.library.view_model.LibraryViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -45,8 +46,8 @@ class LibraryFragment : Fragment() {
 
         tabMediator.attach()
 
-        parentFragmentManager.setFragmentResultListener(PLAYLIST_CREATED_KEY, viewLifecycleOwner){ _, bundle ->
-            val snackBarText = bundle.getString(PLAYLIST_NAME_ARG_KEY) ?: return@setFragmentResultListener
+        parentFragmentManager.setFragmentResultListener(CreatePlaylistFragment.PLAYLIST_CREATED_KEY, viewLifecycleOwner){ _, bundle ->
+            val snackBarText = bundle.getString(CreatePlaylistFragment.PLAYLIST_NAME_ARG_KEY) ?: return@setFragmentResultListener
 
             viewModel.onPlaylistCreatedResult(snackBarText)
         }
@@ -59,11 +60,6 @@ class LibraryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         tabMediator.detach()
-    }
-
-    companion object{
-        const val PLAYLIST_CREATED_KEY = "playlist_created_key"
-        const val PLAYLIST_NAME_ARG_KEY = "playlist_name_key"
     }
 
 }

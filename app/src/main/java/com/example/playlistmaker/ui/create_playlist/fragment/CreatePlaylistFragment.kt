@@ -26,12 +26,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentCreatePlaylistBinding
+import com.example.playlistmaker.domain.db.model.Playlist
 import com.example.playlistmaker.ui.create_playlist.NavigateToCreatePlaylistFrom
 import com.example.playlistmaker.ui.create_playlist.view_model.CreatePlaylistViewModel
 import com.example.playlistmaker.ui.library.fragments.LibraryFragment
@@ -48,7 +50,9 @@ class CreatePlaylistFragment : Fragment() {
     companion object {
         private const val ARGS = "args"
         const val FILES_PATH = "playlistPictures"
-        fun createArgs(args: NavigateToCreatePlaylistFrom): Bundle = bundleOf(ARGS to args)
+        const val PLAYLIST_CREATED_KEY = "playlist_created_key"
+        const val PLAYLIST_NAME_ARG_KEY = "playlist_name_key"
+        fun createArgs(args: Playlist): Bundle = bundleOf(ARGS to args)
     }
 
     private var _binding: FragmentCreatePlaylistBinding? = null
@@ -57,7 +61,7 @@ class CreatePlaylistFragment : Fragment() {
 
     private var onBackPressedCallback: OnBackPressedCallback? = null
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
-    private var args: NavigateToCreatePlaylistFrom? = null
+    private var args: Playlist? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,8 +92,44 @@ class CreatePlaylistFragment : Fragment() {
 
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolBar)
         binding.toolBar.setNavigationOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
-
         prepareEditTextFields()
+
+        binding.artwork.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+        viewModel.observeState().observe(viewLifecycleOwner){
+            binding.apply {
+                setImageArtwork(it.artwork, artwork)
+
+                inputName.editText?.let { field ->
+                    if (field.text.toString() != it.name) {
+                        field.setText(it.name)
+                    }
+                }
+
+                inputDesc.editText?.let { field ->
+                    if (field.text.toString() != it.desc) {
+                        field.setText(it.desc)
+                    }
+                }
+
+                if (inputName.editText?.text?.isNotEmpty() == true && inputName.editText?.text?.isNotBlank() == true)
+                    createPlaylistButton.isEnabled = true
+                else createPlaylistButton.isEnabled = false
+            }
+        }
+
+        if (args == null){
+            activateCreatePlaylistMode()
+        }
+        else{
+            activateEditPlaylistMode(args!!)
+        }
+
+    }
+
+    private fun activateCreatePlaylistMode(){
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true){
             if (viewModel.hasUnsavedChanges()){
                 MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
@@ -105,16 +145,6 @@ class CreatePlaylistFragment : Fragment() {
             else findNavController().popBackStack()
         }
 
-        viewModel.observeState().observe(viewLifecycleOwner){
-            binding.apply {
-                setImageArtwork(it.artwork, artwork)
-
-                if (inputName.editText?.text?.isNotEmpty() == true && inputName.editText?.text?.isNotBlank() == true)
-                    createPlaylistButton.isEnabled = true
-                else createPlaylistButton.isEnabled = false
-            }
-        }
-
         viewModel.observeFInishCreation().observe(viewLifecycleOwner){
             val messageRes = if (it.isSuccess) {
                 R.string.playlist_created
@@ -123,32 +153,28 @@ class CreatePlaylistFragment : Fragment() {
             }
             val message = getString(messageRes, it.playlistName)
 
-            when(args){
-                NavigateToCreatePlaylistFrom.LibraryFragment -> {
-                    parentFragmentManager.setFragmentResult(
-                        LibraryFragment.PLAYLIST_CREATED_KEY,
-                        bundleOf(LibraryFragment.PLAYLIST_NAME_ARG_KEY to message)
-                    )
-                }
-                NavigateToCreatePlaylistFrom.PlayerFragment -> {
-                    parentFragmentManager.setFragmentResult(
-                        PlayerFragment.PLAYLIST_CREATED_KEY,
-                        bundleOf(PlayerFragment.PLAYLIST_NAME_ARG_KEY to message)
-                    )
-                }
-
-                null -> {}
-            }
+            parentFragmentManager.setFragmentResult(
+                PLAYLIST_CREATED_KEY,
+                bundleOf(PLAYLIST_NAME_ARG_KEY to message)
+            )
 
             findNavController().navigateUp()
         }
 
-        binding.artwork.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
-
         binding.createPlaylistButton.setOnClickListener {
             viewModel.onCreateClicked()
+        }
+    }
+
+    private fun activateEditPlaylistMode(playlist: Playlist){
+        viewModel.fillStateWithData(playlist)
+
+        binding.apply {
+            toolBar.title = getString(R.string.edit)
+            createPlaylistButton.text = getString(R.string.save)
+            createPlaylistButton.setOnClickListener {
+                viewModel.onUpdateClicked(playlist) { findNavController().popBackStack() }
+            }
         }
     }
 
@@ -184,27 +210,14 @@ class CreatePlaylistFragment : Fragment() {
             .into(loadTo)
     }
     private fun prepareEditTextFields(){
-        val inputNameTextWatcher = object : TextWatcher{
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onNameInputChanged(s.toString())
-            }
-        }
-
-        val inputDescTextWatcher = object : TextWatcher{
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onDescriptionInputChanged(s.toString())
-            }
-        }
-
         binding.apply {
-            inputName.editText?.addTextChangedListener(inputNameTextWatcher)
-            inputDesc.editText?.addTextChangedListener(inputDescTextWatcher)
+            inputName.editText?.doOnTextChanged { text, start, before, count ->
+                viewModel.onNameInputChanged(text.toString())
+            }
+
+            inputDesc.editText?.doOnTextChanged { text, start, before, count ->
+                viewModel.onDescriptionInputChanged(text.toString())
+            }
         }
     }
 

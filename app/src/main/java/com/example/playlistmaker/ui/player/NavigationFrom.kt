@@ -1,3 +1,3 @@
 package com.example.playlistmaker.ui.player
 
-enum class NavigationFrom{SearchFragment, LibraryFragment}
+enum class NavigationFrom{SearchFragment, LibraryFragment, PlaylistFragment}
