@@ -97,7 +97,6 @@ class PlaylistFragment : Fragment() {
             trackAdapter.tracks = state.tracks
             trackAdapter.notifyDataSetChanged()
 
-
             val hasTracks = state.playlist.tracksNumber > 0
             binding.noTracksFoundError.isVisible = !hasTracks
             binding.tracksRecyclerView.isVisible = hasTracks
@@ -120,6 +119,8 @@ class PlaylistFragment : Fragment() {
                 .transform(CenterCrop())
                 .into(playlistImage)
 
+            desc.isVisible = playlist.playlistDesc.isNotEmpty() && playlist.playlistDesc.isNotBlank()
+
             name.text = playlist.playlistName
             desc.text = playlist.playlistDesc
             tracksNum.text = "${playlist.tracksNumber} ${tracksCount}"
@@ -130,7 +131,7 @@ class PlaylistFragment : Fragment() {
 
             deleteButtonBottomSheet.setOnClickListener {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                showDeletePlaylistMessage()
+                showDeletePlaylistMessage(playlist.playlistName)
             }
 
             editButtonBottomSheet.setOnClickListener {
@@ -183,13 +184,14 @@ class PlaylistFragment : Fragment() {
             .show()
     }
 
-    private fun showDeletePlaylistMessage(){
+    private fun showDeletePlaylistMessage(name: String){
+        val message = getString(R.string.want_to_delete_playlist, name)
         MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
             .setTitle(R.string.delete_playlist)
-            .setMessage(R.string.want_to_delete_playlist)
-            .setNegativeButton(R.string.cancel) { dialog, which ->
+            .setMessage(message)
+            .setNegativeButton(R.string.NO) { dialog, which ->
             }
-            .setPositiveButton(R.string.delete) { dialog, which ->
+            .setPositiveButton(R.string.YES) { dialog, which ->
                 viewModel.deletePlaylist(onDeleted = {
                     findNavController().popBackStack()
                 })
