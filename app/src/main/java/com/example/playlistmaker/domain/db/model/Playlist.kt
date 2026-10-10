@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 data class Playlist(
     var playlistName: String,
     var playlistDesc: String,
-    val artworkPath: String,
+    var artworkPath: String,
     val tracksIds: MutableList<Long>,
     var tracksNumber: Int,
     val id: Long = 0

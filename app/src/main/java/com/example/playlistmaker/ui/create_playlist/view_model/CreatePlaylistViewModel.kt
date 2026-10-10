@@ -43,13 +43,29 @@ class CreatePlaylistViewModel(private val playlistInteractor: PlaylistInteractor
             0
         )
 
-
         viewModelScope.launch {
             playlistInteractor.save(playlist)
             finishCreation.value = CreatePlaylistResult(playlist.playlistName, true)
         }
     }
 
+    fun onUpdateClicked(playlist: Playlist, onUpdated: () -> Unit){
+        playlist.playlistName = state.value?.name!!
+        playlist.playlistDesc = state.value?.desc!!
+        playlist.artworkPath = state.value?.artwork!!
+
+        viewModelScope.launch {
+            playlistInteractor.updatePlaylist(playlist)
+            onUpdated()
+        }
+    }
+
     fun hasUnsavedChanges(): Boolean =
         (state.value?.name?.isNotEmpty() == true || state.value?.desc?.isNotEmpty() == true || state.value?.artwork?.isNotEmpty() == true)
+
+    fun fillStateWithData(playlist: Playlist){
+        state.postValue(
+            CreatePlaylistUiState(playlist.playlistName, playlist.playlistDesc, playlist.artworkPath)
+        )
+    }
 }

@@ -35,4 +35,9 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
     ) = playlistRepository.deleteTrackById(id, playlist)
 
     override fun getPlaylistById(id: Long): Flow<Playlist> = playlistRepository.getPlaylistById(id)
+    override suspend fun updatePlaylist(playlist: Playlist){
+        playlist.playlistName = playlist.playlistName.trim()
+        playlist.playlistDesc = playlist.playlistDesc.trim()
+        playlistRepository.updatePlaylist(playlist)
+    }
 }

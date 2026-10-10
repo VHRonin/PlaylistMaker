@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class PlaylistRepositoryImpl(
     private val playlistDao: PlaylistDao,
@@ -60,20 +61,23 @@ class PlaylistRepositoryImpl(
         return updated
     }
 
-    override fun getTracksByIds(ids: List<Long>): Flow<List<Track>> = trackInPlaylistDao.getTracksByIds(ids).map { trackInPlaylistEntities ->
-        convertTracksInPlaylist(trackInPlaylistEntities)
-    }
+    override fun getTracksByIds(ids: List<Long>): Flow<List<Track>> =
+        trackInPlaylistDao.getTracksByIds(ids).map { entities ->
+            val tracksById = convertTracksInPlaylist(entities)
+                .associateBy { it.trackId }
+
+            ids.asReversed().mapNotNull { trackId ->
+                tracksById[trackId]
+            }
+        }
 
     override fun getTracksDurationsByIds(ids: List<Long>): Flow<String> = trackInPlaylistDao.getTracksDurationsByIds(ids).map { durations ->
-        var durationSum: Long = 0
-        durations.map {
-            val sdf = SimpleDateFormat("mm", Locale.getDefault()).apply {
-                timeZone = TimeZone.getTimeZone("UTC")
-            }
-            val millis = sdf.parse(it)!!.time
-            durationSum += millis
+        val totalSec = durations.sumOf { t ->
+            val p = t.split(":")
+            (p.getOrNull(0)?.toLongOrNull() ?: 0L) * 60 + (p.getOrNull(1)?.toLongOrNull() ?: 0L)
         }
-        SimpleDateFormat("mm", Locale.getDefault()).format(durationSum)
+        (totalSec / 60.0).roundToInt().toString()
+
     }
 
     override suspend fun deleteTrackById(id: Long, playlist: Playlist) = withContext(Dispatchers.IO){
@@ -105,6 +109,13 @@ class PlaylistRepositoryImpl(
     override fun getPlaylistById(id: Long): Flow<Playlist> = playlistDao.getPlaylistById(id).map { playlistEntity ->
         playlistDbConvertor.map(playlistEntity)
     }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        playlistDao.updatePlaylist(
+            playlistDbConvertor.map(playlist)
+        )
+    }
+
 
     private fun convertPlaylists(playlists: List<PlaylistEntity>): List<Playlist>{
         return playlists.map { playlistEntity -> playlistDbConvertor.map(playlistEntity) }

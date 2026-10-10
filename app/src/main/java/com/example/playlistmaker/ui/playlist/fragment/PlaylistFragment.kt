@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistBinding
 import com.example.playlistmaker.domain.db.model.Playlist
+import com.example.playlistmaker.ui.create_playlist.fragment.CreatePlaylistFragment
 import com.example.playlistmaker.ui.player.NavigationFrom
 import com.example.playlistmaker.ui.player.fragment.PlayerFragment
 import com.example.playlistmaker.ui.playlist.PlaylistNavArgs
@@ -26,6 +28,7 @@ import com.example.playlistmaker.ui.playlist.view_model.PlaylistViewModel
 import com.example.playlistmaker.ui.search.TrackAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
@@ -43,6 +46,7 @@ class PlaylistFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var bottomSheetCallback: BottomSheetBehavior.BottomSheetCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,11 +74,6 @@ class PlaylistFragment : Fragment() {
         showBottomSheet()
         prepareEditBottomSheet()
 
-        binding.deleteButtonBottomSheet.setOnClickListener {
-            viewModel.deletePlaylist(onDeleted = {
-                findNavController().popBackStack()
-            })
-        }
         trackAdapter = TrackAdapter(
             debounceClick = viewModel::debounceClick,
             navigationFrom = NavigationFrom.PlaylistFragment,
@@ -97,6 +96,15 @@ class PlaylistFragment : Fragment() {
 
             trackAdapter.tracks = state.tracks
             trackAdapter.notifyDataSetChanged()
+
+
+            val hasTracks = state.playlist.tracksNumber > 0
+            binding.noTracksFoundError.isVisible = !hasTracks
+            binding.tracksRecyclerView.isVisible = hasTracks
+        }
+
+        viewModel.observeShowNoTracksToShareSnackBar().observe(viewLifecycleOwner){
+            Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -120,7 +128,20 @@ class PlaylistFragment : Fragment() {
                 setShareClickListener(playlist, tracksCount)
             }
 
+            deleteButtonBottomSheet.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                showDeletePlaylistMessage()
+            }
+
+            editButtonBottomSheet.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                findNavController().navigate(R.id.action_playlistFragment_to_createPlaylistFragment,
+                    CreatePlaylistFragment.createArgs(playlist)
+                )
+            }
+
             shareButtonBottomSheet.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 setShareClickListener(playlist, tracksCount)
             }
         }
@@ -131,13 +152,7 @@ class PlaylistFragment : Fragment() {
             viewModel.sharePlaylist(tracksCount)
         }
         else {
-            MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
-                .setTitle(R.string.nothing_to_share)
-                .setMessage(R.string.no_tracks)
-                .setPositiveButton(R.string.ok){ dialog, which ->
-
-                }
-                .show()
+            viewModel.showNoTracksFound(getString(R.string.no_tracks))
         }
     }
 
@@ -159,7 +174,7 @@ class PlaylistFragment : Fragment() {
 
     private fun showDeleteTrackMessage(id: Long){
         MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
-            .setTitle(R.string.want_to_delete)
+            .setMessage(R.string.want_to_delete)
             .setNegativeButton(R.string.NO) { dialog, which ->
             }
             .setPositiveButton(R.string.YES) { dialog, which ->
@@ -168,8 +183,22 @@ class PlaylistFragment : Fragment() {
             .show()
     }
 
+    private fun showDeletePlaylistMessage(){
+        MaterialAlertDialogBuilder(requireContext(), R.style.LightAlertDialog)
+            .setTitle(R.string.delete_playlist)
+            .setMessage(R.string.want_to_delete_playlist)
+            .setNegativeButton(R.string.cancel) { dialog, which ->
+            }
+            .setPositiveButton(R.string.delete) { dialog, which ->
+                viewModel.deletePlaylist(onDeleted = {
+                    findNavController().popBackStack()
+                })
+            }
+            .show()
+    }
+
     private fun prepareEditBottomSheet(){
-        val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 
@@ -238,7 +267,13 @@ class PlaylistFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        bottomSheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 }

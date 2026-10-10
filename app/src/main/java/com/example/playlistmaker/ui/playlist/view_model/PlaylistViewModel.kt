@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.db.api.PlaylistInteractor
 import com.example.playlistmaker.domain.db.model.Playlist
 import com.example.playlistmaker.domain.sharing.SharingInteractor
+import com.example.playlistmaker.ui.SingleLiveEvent
 import com.example.playlistmaker.ui.playlist.PlaylistUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,8 +21,14 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, priv
     private var isClickAllowed = true
     private var debounceClickJob: Job? = null
     private var playlistJob: Job? = null
+    private var tracksJob: Job? = null
+    private var durationJob: Job? = null
+
+    private val showNoTracksToShareSnackBar = SingleLiveEvent<String>()
+    fun observeShowNoTracksToShareSnackBar(): LiveData<String> = showNoTracksToShareSnackBar
 
     fun getPlaylistById(id: Long){
+        playlistJob?.cancel()
         playlistJob = viewModelScope.launch {
             playlistInteractor.getPlaylistById(id).collect { playlist ->
                 state.value = state.value?.copy(playlist = playlist) ?: PlaylistUiState("", emptyList(), playlist)
@@ -46,7 +53,8 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, priv
     }
 
     private fun searchTracks(ids: List<Long>){
-        viewModelScope.launch {
+        tracksJob?.cancel()
+        tracksJob = viewModelScope.launch {
             playlistInteractor.getTracksByIds(ids).collect { tracks ->
                 state.value = state.value?.copy(tracks = tracks)
             }
@@ -54,7 +62,8 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, priv
     }
 
     private fun getTracksDuration(ids: List<Long>){
-        viewModelScope.launch {
+        durationJob?.cancel()
+        durationJob = viewModelScope.launch {
             val duration = playlistInteractor.getTracksDurationsByIds(ids).collect { duration ->
                 state.value = state.value?.copy(tracksDuration = duration)
             }
@@ -68,7 +77,7 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, priv
     }
 
     fun sharePlaylist(textNum: String){
-        var textToShare = "${state.value?.tracks?.size} $textNum\n"
+        var textToShare = "${state.value?.playlist?.playlistName}\n${state.value?.playlist?.playlistDesc}\n${state.value?.tracks?.size} $textNum\n"
         val tracks = state.value?.tracks
 
         tracks?.forEachIndexed { index, track ->
@@ -87,6 +96,10 @@ class PlaylistViewModel(private val playlistInteractor: PlaylistInteractor, priv
             playlistInteractor.delete(playlist)
             onDeleted()
         }
+    }
+
+    fun showNoTracksFound(text: String){
+        showNoTracksToShareSnackBar.value = text
     }
 
     companion object{

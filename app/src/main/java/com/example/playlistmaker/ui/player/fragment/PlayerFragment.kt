@@ -93,12 +93,11 @@ class PlayerFragment : Fragment() {
 
         binding.createPlaylistButton.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            findNavController().navigate(R.id.action_playerFragment_to_createPlaylistFragment,
-                CreatePlaylistFragment.createArgs(NavigateToCreatePlaylistFrom.PlayerFragment))
+            findNavController().navigate(R.id.action_playerFragment_to_createPlaylistFragment)
         }
 
-        parentFragmentManager.setFragmentResultListener(PLAYLIST_CREATED_KEY, viewLifecycleOwner){ _, bundle ->
-            val snackBarText = bundle.getString(PLAYLIST_NAME_ARG_KEY) ?: return@setFragmentResultListener
+        parentFragmentManager.setFragmentResultListener(CreatePlaylistFragment.PLAYLIST_CREATED_KEY, viewLifecycleOwner){ _, bundle ->
+            val snackBarText = bundle.getString(CreatePlaylistFragment.PLAYLIST_NAME_ARG_KEY) ?: return@setFragmentResultListener
 
             viewModel.onPlaylistCreatedResult(snackBarText)
         }
@@ -231,9 +230,6 @@ class PlayerFragment : Fragment() {
 
         fun createArgs(args: PlayerNavArgs): Bundle =
             bundleOf(ARGS to args)
-
-        const val PLAYLIST_CREATED_KEY = "playlist_created_key"
-        const val PLAYLIST_NAME_ARG_KEY = "playlist_name_key"
         private const val OVERLAY_MAX_ALPHA = 0.5f
     }
 }
