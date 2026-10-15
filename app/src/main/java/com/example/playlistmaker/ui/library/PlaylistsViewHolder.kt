@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,7 +14,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.db.model.Playlist
 
 class PlaylistsViewHolder(view: View): RecyclerView.ViewHolder(view) {
-    private val playlistImage = itemView.findViewById<ImageButton>(R.id.playlistImage)
+    private val playlistImage = itemView.findViewById<ImageView>(R.id.playlistImage)
     private val playlistName = itemView.findViewById<TextView>(R.id.name)
     private val tracksNum = itemView.findViewById<TextView>(R.id.tracksNum)
 

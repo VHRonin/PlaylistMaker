@@ -42,11 +42,9 @@ class PlaylistsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.createPlaylistButton.setOnClickListener {
-            findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment,
-                CreatePlaylistFragment.createArgs(NavigateToCreatePlaylistFrom.LibraryFragment))
+            findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment)
         }
 
-//        binding.playlistsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         viewModel.searchPlaylists()
 
         playlistsAdapter = PlaylistsAdapter()
